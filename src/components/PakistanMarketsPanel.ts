@@ -3,8 +3,10 @@ import { joinSafeHtml, safeHtml } from '@/utils/sanitize';
 import type { SafeHtml } from '@/utils/sanitize';
 import { startSmartPollLoop, type SmartPollLoopHandle } from '@/services/smart-poll-loop';
 import { errorMessage, fetchKse100, fetchPkrRates, formatTime, type Kse100Quote, type PkrRates } from '@/services/pakistan-desk';
+import { fetchGold, type GoldRate } from '@/services/pk-gold';
 
 const FX_MAX_AGE_MS = 60 * 60_000; // open.er-api.com publishes once a day
+const GOLD_MAX_AGE_MS = 30 * 60_000;
 
 const number = (value: number, digits: number): string =>
   value.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
@@ -21,6 +23,8 @@ export class PakistanMarketsPanel extends Panel {
   private fx: (PkrRates & { updated: string | null }) | null = null;
   private fxError: string | null = null;
   private fxFetchedAt = 0;
+  private gold: GoldRate | null = null;
+  private goldFetchedAt = 0;
 
   constructor() {
     super({
@@ -34,9 +38,11 @@ export class PakistanMarketsPanel extends Panel {
 
   private async refresh(): Promise<void> {
     const wantFx = Date.now() - this.fxFetchedAt > FX_MAX_AGE_MS;
-    const [kse, fx] = await Promise.allSettled([
+    const wantGold = Date.now() - this.goldFetchedAt > GOLD_MAX_AGE_MS;
+    const [kse, fx, gold] = await Promise.allSettled([
       fetchKse100(this.signal),
       wantFx ? fetchPkrRates(this.signal) : Promise.resolve(this.fx),
+      wantGold ? fetchGold(this.signal) : Promise.resolve(this.gold),
     ]);
     if (this.signal.aborted) return;
     if (kse.status === 'fulfilled') [this.kse, this.kseError] = [kse.value, null];
@@ -47,7 +53,11 @@ export class PakistanMarketsPanel extends Panel {
     } else {
       this.fxError = errorMessage(fx.reason);
     }
-    this.setSafeContent(safeHtml`<div class="pk-markets">${this.renderKse()}${this.renderFx()}</div>`);
+    if (gold.status === 'fulfilled') {
+      if (wantGold) this.goldFetchedAt = Date.now();
+      this.gold = gold.value;
+    }
+    this.setSafeContent(safeHtml`<div class="pk-markets">${this.renderKse()}${this.renderFx()}${this.renderGold()}</div>`);
   }
 
   private renderKse(): SafeHtml {
@@ -84,8 +94,19 @@ export class PakistanMarketsPanel extends Panel {
     </div>`;
   }
 
+  private renderGold(): SafeHtml {
+    const g = this.gold;
+    if (!g) return safeHtml``;
+    return safeHtml`<div class="pk-stat">
+      <div class="pk-stat-label">Gold (per tola) ${g.stale ? safeHtml`<span class="pk-badge pk-badge-warn">stale</span>` : ''}</div>
+      <div class="pk-stat-value">PKR ${number(g.perTola, 0)}</div>
+      <div class="pk-note">forex.pk · ${formatTime(g.fetchedAt)}</div>
+    </div>`;
+  }
+
   public override destroy(): void {
     this.loop.stop();
     super.destroy();
   }
 }
+

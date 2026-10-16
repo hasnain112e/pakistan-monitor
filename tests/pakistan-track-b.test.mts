@@ -92,4 +92,14 @@ describe('usgsNearPakistan', () => {
   });
 });
 
+import { parseGoldTola } from '../api/pk-gold.js';
+
+describe('parseGoldTola', () => {
+  it('reads per 10 g, per tola and per ounce from the bullion table', () => {
+    assert.deepEqual(parseGoldTola('<tr><td>Gold</td><td>XAU</td><td>369,170</td><td>430,143</td><td>1,148,267</td></tr>'), { per10g: 369170, perTola: 430143, perOunce: 1148267 });
+    assert.equal(parseGoldTola('<html>maintenance</html>'), null);
+  });
+});
+
+
 
