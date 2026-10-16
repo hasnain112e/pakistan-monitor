@@ -66,3 +66,15 @@ export function findDistrict(name: string): PkPlace | undefined {
   return PK_PLACES.find((p) => p.kind === 'district' && normalizePlaceName(p.name) === key)
     ?? PK_PLACES.find((p) => p.kind === 'city' && normalizePlaceName(p.name) === key);
 }
+
+import type { NewsItem } from '../types';
+
+export function districtHeadlines(items: NewsItem[], districtName: string): NewsItem[] {
+  const place = findDistrict(districtName);
+  const seen = new Set<string>();
+  return items
+    .filter((item) => (place ? mentionsPlace(item.title, place) : item.title.toLowerCase().includes(districtName.toLowerCase())))
+    .filter((item) => !seen.has(item.link) && Boolean(seen.add(item.link)))
+    .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
+}
+

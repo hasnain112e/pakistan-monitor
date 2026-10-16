@@ -121,4 +121,22 @@ describe('locatePakistan', () => {
   });
 });
 
+import { districtHeadlines } from '../src/services/pk-gazetteer';
+
+describe('districtHeadlines', () => {
+  const item = (title: string, link: string, iso: string) =>
+    ({ source: 'Dawn', title, link, pubDate: new Date(iso), isAlert: false }) as import('../src/types').NewsItem;
+
+  it('keeps headlines naming the district, newest first, once each', () => {
+    const items = [
+      item('Rain lashes Quetta', 'a', '2026-10-15T08:00:00Z'),
+      item('کوئٹہ میں سردی', 'b', '2026-10-15T09:00:00Z'),
+      item('Rain lashes Quetta', 'a', '2026-10-15T08:00:00Z'),
+      item('Lahore smog worsens', 'c', '2026-10-15T10:00:00Z'),
+    ];
+    assert.deepEqual(districtHeadlines(items, 'Quetta').map((i) => i.link), ['b', 'a']);
+  });
+});
+
+
 

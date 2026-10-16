@@ -684,6 +684,8 @@ export class DeckGLMap {
   private renewableInstallations: RenewableInstallation[] = [];
   private webcamData: WebcamMarker[] = [];
   private countriesGeoJsonData: FeatureCollection<Geometry> | null = null;
+  private pkDistrictsGeoJson: FeatureCollection<Geometry> | null = null;
+  private onDistrictClick?: (district: { name: string }) => void;
   private conflictZoneGeoJson: GeoJSON.FeatureCollection | null = null;
   // #4561: all zone features + their precomputed bounds, built once (cheap — no
   // tessellation); the viewport cull filters this into conflictZoneGeoJson.
@@ -1398,6 +1400,7 @@ export class DeckGLMap {
       this.state.zoom = this.maplibreMap?.getZoom() ?? this.state.zoom;
       this.onStateChange?.(this.getState());
     });
+    this.loadPakistanDistricts();
   }
 
   public setIsResizing(value: boolean): void {
@@ -1975,6 +1978,9 @@ export class DeckGLMap {
       if (this.dayNightIntervalId) this.stopDayNightTimer();
       this.layerCache.delete('day-night-layer');
     }
+
+    const pkDistricts = this.createPakistanDistrictsLayer();
+    if (pkDistricts) layers.push(pkDistricts);
 
     if (this.selectedChinaCorridorOverlay) {
       layers.push(...this.createChinaCorridorSelectionLayers(this.selectedChinaCorridorOverlay));
@@ -4763,6 +4769,40 @@ export class DeckGLMap {
     return layers;
   }
 
+  // Pakistan Monitor: district outlines, clickable everywhere inside Pakistan.
+  private loadPakistanDistricts(): void {
+    void fetch('/data/pk-districts.geojson')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((geojson: FeatureCollection<Geometry> | null) => {
+        if (!geojson || this.destroyed) return;
+        this.pkDistrictsGeoJson = geojson;
+        this.debouncedRebuildLayers();
+      })
+      .catch(() => { /* outlines are decoration; the map works without them */ });
+  }
+
+  private createPakistanDistrictsLayer(): GeoJsonLayer | null {
+    if (!this.pkDistrictsGeoJson) return null;
+    return new GeoJsonLayer({
+      id: 'pk-districts-layer',
+      data: this.pkDistrictsGeoJson,
+      filled: true,
+      stroked: true,
+      pickable: true,
+      autoHighlight: true,
+      // Alpha 1 of 255: invisible, but every district stays clickable.
+      getFillColor: [0, 0, 0, 1],
+      highlightColor: [47, 191, 113, 70],
+      getLineColor: [47, 191, 113, 120],
+      getLineWidth: 1,
+      lineWidthMinPixels: 0.6,
+    });
+  }
+
+  public setOnDistrictClick(cb: (district: { name: string }) => void): void {
+    this.onDistrictClick = cb;
+  }
+
   private createHappinessChoroplethLayer(): GeoJsonLayer | null {
     if (!this.countriesGeoJsonData || this.happinessScores.size === 0) return null;
     const scores = this.happinessScores;
@@ -5334,6 +5374,12 @@ export class DeckGLMap {
 
     const rawClickLayerId = info.layer?.id || '';
     const layerId = rawClickLayerId.endsWith('-ghost') ? rawClickLayerId.slice(0, -6) : rawClickLayerId;
+
+    if (layerId === 'pk-districts-layer') {
+      const name = (info.object as { properties?: { shapeName?: unknown } }).properties?.shapeName;
+      if (typeof name === 'string') this.onDistrictClick?.({ name });
+      return;
+    }
 
     if (layerId === 'news-locations-layer') {
       this.onNewsClick?.(info.object as NewsLocationMarker);

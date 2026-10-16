@@ -3431,6 +3431,9 @@ export class PanelLayoutManager implements AppModule {
     }
 
     this.ctx.map.initEscalationGetters();
+    this.ctx.map.onDistrictClicked(({ name }) => {
+      (this.ctx.panels['pk-district'] as import('@/components/PakistanDistrictPanel').PakistanDistrictPanel | undefined)?.showDistrict(name);
+    });
     this.ctx.currentTimeRange = this.ctx.map.getTimeRange();
     markLcpDebug('wm:map:container-ready');
 
