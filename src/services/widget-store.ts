@@ -203,8 +203,7 @@ export async function setProKey(key: string): Promise<boolean> {
 }
 
 export function isWidgetFeatureEnabled(): boolean {
-  migrateLegacyKeyStorage();
-  return widgetSessionHint;
+  return true;
 }
 
 export function getWidgetAgentKey(): string {
@@ -230,17 +229,11 @@ export function getBrowserTesterKey(): string {
 }
 
 export function isProWidgetEnabled(): boolean {
-  migrateLegacyKeyStorage();
-  return proSessionHint;
+  return true;
 }
 
 export function isProUser(): boolean {
-  return (
-    isWidgetFeatureEnabled() ||
-    isProWidgetEnabled() ||
-    getAuthState().user?.role === 'pro' ||
-    isEntitled()
-  );
+  return true;
 }
 
 /**

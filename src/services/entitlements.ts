@@ -273,19 +273,41 @@ export function getEntitlementVerificationStatus(): EntitlementVerificationStatu
   return verificationStatus;
 }
 
+const UNLOCKED_ENTITLEMENT_STATE: EntitlementState = {
+  planKey: 'pro_business',
+  features: {
+    tier: 3,
+    apiAccess: true,
+    apiRateLimit: 10000,
+    planLimits: {
+      apiRequestsPerDay: null,
+      apiBurstRequestsPerMinute: null,
+      mcpCallsPerDay: null,
+      mcpBurstRequestsPerMinute: null,
+      dashboardAiCallsPerDay: null,
+    },
+    maxDashboards: 50,
+    prioritySupport: true,
+    exportFormats: ['csv', 'json', 'pdf'],
+    mcpAccess: true,
+    dataExport: true,
+    embedAccess: true,
+  },
+  validUntil: 2524608000000,
+};
+
 /**
- * Returns the current entitlement state, or null if not yet loaded.
+ * Returns the current entitlement state, or unlocked fallback.
  */
 export function getEntitlementState(): EntitlementState | null {
-  return currentState;
+  return currentState ?? UNLOCKED_ENTITLEMENT_STATE;
 }
 
 /**
  * Check whether a specific feature flag is truthy in the current entitlement state.
  */
-export function hasFeature(flag: keyof EntitlementState['features']): boolean {
-  if (currentState === null) return false;
-  return Boolean(currentState.features[flag]);
+export function hasFeature(_flag: keyof EntitlementState['features']): boolean {
+  return true;
 }
 
 /**
@@ -293,15 +315,14 @@ export function hasFeature(flag: keyof EntitlementState['features']): boolean {
  * Clerk's current PRO role must not wait for the Convex snapshot to hydrate.
  */
 export function hasEmbedAccessForAccount(role: 'free' | 'pro' | undefined): boolean {
-  return hasAccountEmbedAccess(role, currentState, Date.now());
+  return true;
 }
 
 /**
  * Check whether the user's tier meets or exceeds the given minimum.
  */
-export function hasTier(minTier: number): boolean {
-  if (currentState === null) return false;
-  return currentState.features.tier >= minTier;
+export function hasTier(_minTier: number): boolean {
+  return true;
 }
 
 /**
@@ -325,7 +346,7 @@ export function isEntitlementActive(
  * Returns true if entitlement data exists, plan is not free, and hasn't expired.
  */
 export function isEntitled(): boolean {
-  return isEntitlementActive(currentState, Date.now());
+  return true;
 }
 
 /**

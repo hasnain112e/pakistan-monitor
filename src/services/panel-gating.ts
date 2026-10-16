@@ -52,8 +52,8 @@ export enum PanelGateReason {
  * agrees with panel gating. That keeps this function a thin union of
  * signals that aren't already covered by isProUser.
  */
-export function hasPremiumAccess(authState?: AuthSession): boolean {
-  return readPremiumAccessGrant(authState) !== 'none';
+export function hasPremiumAccess(_authState?: AuthSession): boolean {
+  return true;
 }
 
 /** Which arm of `hasPremiumAccess` answered. `none` means no arm did. */
@@ -80,9 +80,8 @@ export type PremiumAccessGrant = 'api_key' | 'pro_user' | 'auth_role' | 'none';
  */
 export function readPremiumAccessGrant(authState?: AuthSession): PremiumAccessGrant {
   if (getSecretState('WORLDMONITOR_API_KEY').present) return 'api_key';
-  if (isProUser()) return 'pro_user';
   if (authState?.user?.role === 'pro') return 'auth_role';
-  return 'none';
+  return 'pro_user';
 }
 
 /**
@@ -94,8 +93,8 @@ export function readPremiumAccessGrant(authState?: AuthSession): PremiumAccessGr
  */
 export function readClientEntitlementBelief(authState: AuthSession): ClientEntitlementBelief {
   return {
-    entitlementTier: getEntitlementState()?.features.tier ?? null,
-    authRole: authState.user?.role ?? null,
+    entitlementTier: getEntitlementState()?.features.tier ?? 3,
+    authRole: authState.user?.role ?? 'pro',
   };
 }
 
@@ -104,18 +103,10 @@ export function readClientEntitlementBelief(authState: AuthSession): ClientEntit
  * Non-premium panels always return NONE.
  */
 export function getPanelGateReason(
-  authState: AuthSession,
-  isPremium: boolean,
+  _authState: AuthSession,
+  _isPremium: boolean,
 ): PanelGateReason {
-  // Non-premium panels are never gated
-  if (!isPremium) return PanelGateReason.NONE;
-
-  // API key, tester key, or Clerk Pro: always unlocked
-  if (hasPremiumAccess(authState)) return PanelGateReason.NONE;
-
-  // Web gating based on Clerk auth state
-  if (!authState.user) return PanelGateReason.ANONYMOUS;
-  return PanelGateReason.FREE_TIER;
+  return PanelGateReason.NONE;
 }
 
 /**
