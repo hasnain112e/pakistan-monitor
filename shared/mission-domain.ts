@@ -1,4 +1,8 @@
 export const MISSION_PRESET_IDS = [
+  'pk-disaster-desk',
+  'pk-economy-desk',
+  'pk-security-desk',
+  'pk-smog-desk',
   'crisis-desk',
   'supply-chain-risk',
   'energy-security',

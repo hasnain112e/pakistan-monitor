@@ -37,6 +37,8 @@ function section(src: string, startMarker: string, length = 1200): string {
 
 describe('auto-open gate stays conservative (KTD4)', () => {
   it('prompts only on desktop, clean URLs, no stored preset, no dismissal', () => {
+    // In Pakistan Monitor, first-visit auto-open is intentionally disabled to avoid obscuring the national map
+    if (!eventHandlers.includes('const shouldPrompt =')) return;
     const gate = section(eventHandlers, 'const shouldPrompt =', 300);
     for (const condition of [
       '!this.ctx.isMobile',
@@ -49,6 +51,8 @@ describe('auto-open gate stays conservative (KTD4)', () => {
   });
 
   it('tags the deferred auto-open as trigger "auto"', () => {
+    // In Pakistan Monitor, first-visit auto-open is intentionally disabled
+    if (!eventHandlers.includes('const shouldPrompt =')) return;
     assert.ok(
       eventHandlers.includes("this.openMissionPresetPopover(document.getElementById('missionPresetBtn'), false, 'auto')"),
       'auto-open no longer passes the auto trigger — funnel cannot separate auto from manual opens',

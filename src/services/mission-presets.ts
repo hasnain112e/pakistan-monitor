@@ -19,7 +19,7 @@ export type { MissionPresetId } from '../../shared/mission-domain';
 export const MISSION_PRESET_STORAGE_KEY = 'worldmonitor-mission-preset-v1';
 export const MISSION_PRESET_DISMISSED_KEY = 'worldmonitor-mission-preset-dismissed-v1';
 
-export type MissionMapView = 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
+export type MissionMapView = 'pakistan' | 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
 export type MissionTimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
 
 export interface MissionPreset {
@@ -53,6 +53,54 @@ export interface ResetMissionPresetState {
 }
 
 export const MISSION_PRESETS: readonly MissionPreset[] = [
+  {
+    id: 'pk-disaster-desk',
+    label: 'Pakistan Disaster Desk',
+    shortLabel: 'Disaster',
+    description: 'Quakes, floods, heat and fog warnings, air quality and incidents across Pakistan.',
+    icon: '!',
+    view: 'pakistan',
+    zoom: 4.5,
+    timeRange: '24h',
+    panels: ['map', 'pk-disasters', 'pk-weather', 'pk-air', 'pk-incidents', 'pakistan', 'urdu'],
+    layers: ['natural', 'fires', 'weather'],
+  },
+  {
+    id: 'pk-economy-desk',
+    label: 'Pakistan Economy Desk',
+    shortLabel: 'Economy',
+    description: 'PSX indices, the rupee, energy news and the AI brief.',
+    icon: '$',
+    view: 'pakistan',
+    zoom: 4.5,
+    timeRange: '24h',
+    panels: ['map', 'pk-markets', 'pakistan', 'pk-brief', 'energy'],
+    layers: ['economic'],
+  },
+  {
+    id: 'pk-security-desk',
+    label: 'Pakistan Security Desk',
+    shortLabel: 'Security',
+    description: 'Incidents by province, district headlines, Pakistani and Urdu news, live TV.',
+    icon: '◆',
+    view: 'pakistan',
+    zoom: 4.5,
+    timeRange: '24h',
+    panels: ['map', 'pk-incidents', 'pk-district', 'pakistan', 'urdu', 'live-news'],
+    layers: ['hotspots', 'conflicts', 'protests'],
+  },
+  {
+    id: 'pk-smog-desk',
+    label: 'Pakistan Smog & Health Desk',
+    shortLabel: 'Smog',
+    description: 'City air quality, fog and heat warnings, and Pakistani headlines.',
+    icon: '≋',
+    view: 'pakistan',
+    zoom: 4.5,
+    timeRange: '24h',
+    panels: ['map', 'pk-air', 'pk-weather', 'pakistan'],
+    layers: ['fires', 'weather'],
+  },
   {
     id: 'crisis-desk',
     label: 'Crisis Desk',
