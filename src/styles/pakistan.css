@@ -2,17 +2,21 @@
    Unlayered, so it wins over main.css (wrapped in @layer base by base-layer.css).
    Scoped to the main edition; the upstream variants keep their own looks. */
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap');
+
 :root:not([data-variant]):not([data-theme="light"]),
 :root[data-variant="full"]:not([data-theme="light"]) {
   --pk-green: #2fbf71; /* flag green #01411C, lifted for contrast on dark */
-  --bg: #060d09;
-  --bg-secondary: #0a140e;
-  --surface: #0d1811;
-  --surface-hover: #132219;
-  --panel-bg: #0d1811;
-  --border: #1d3024;
-  --border-subtle: #12201a;
-  --panel-border: #1d3024;
+  --pk-green-glow: rgba(47, 191, 113, 0.35);
+  --pk-green-bg: rgba(47, 191, 113, 0.08);
+  --bg: #050b07;
+  --bg-secondary: #08120b;
+  --surface: #0c1810;
+  --surface-hover: #122418;
+  --panel-bg: rgba(12, 24, 16, 0.88);
+  --border: #1a3322;
+  --border-subtle: #132418;
+  --panel-border: rgba(47, 191, 113, 0.22);
   --green: var(--pk-green);
   --status-live: var(--pk-green);
   --semantic-positive: var(--pk-green);
@@ -21,71 +25,307 @@
 :root[data-theme="light"]:not([data-variant]),
 :root[data-theme="light"][data-variant="full"] {
   --pk-green: #01411c;
+  --pk-green-glow: rgba(1, 65, 28, 0.2);
+  --pk-green-bg: rgba(1, 65, 28, 0.05);
   --green: #0f7a3d;
   --status-live: #0f7a3d;
   --semantic-positive: #0f7a3d;
 }
 
-.pk-note { font-size: 11px; color: var(--text-dim); }
-.pk-warn { color: var(--semantic-elevated); }
+/* Glassmorphism panel styling */
+.panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 6px;
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.45);
+}
+
+.panel-header {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.pk-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.pk-warn {
+  color: var(--semantic-elevated);
+}
+
 .pk-badge {
-  display: inline-block;
-  padding: 1px 6px;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
   border: 1px solid currentColor;
-  border-radius: 3px;
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  border-radius: 10px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.15s ease;
 }
-.pk-badge-warn { color: var(--semantic-elevated); }
 
-.pk-markets { display: grid; gap: 14px; padding: 4px 2px; }
-.pk-stat-label { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; }
-.pk-stat-value { font-size: 26px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
-.pk-stat-change { font-size: 13px; font-variant-numeric: tabular-nums; }
-.pk-up { color: var(--semantic-positive); }
-.pk-down { color: var(--semantic-critical); }
+.pk-badge-warn {
+  color: var(--semantic-elevated);
+  border-color: currentColor;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* Markets Panel & KPI cards */
+.pk-markets {
+  display: grid;
+  gap: 12px;
+  padding: 4px 2px;
+}
+
+.pk-stat {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(47, 191, 113, 0.07) 0%, rgba(12, 24, 16, 0.75) 100%);
+  border: 1px solid rgba(47, 191, 113, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.pk-stat:hover {
+  border-color: rgba(47, 191, 113, 0.45);
+  box-shadow: 0 6px 20px rgba(47, 191, 113, 0.12);
+}
+
+.pk-stat-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pk-stat-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin: 2px 0;
+}
+
+.pk-stat-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pk-up {
+  color: #34d399;
+}
+
+.pk-down {
+  color: #f87171;
+}
+
 .pk-cross {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 12px;
-  margin: 4px 0;
-  font-size: 12px;
+  gap: 6px 12px;
+  margin: 6px 0 2px;
+  font-size: 11.5px;
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
-.pk-air { display: grid; gap: 2px; }
+.pk-cross span {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+}
+
+.pk-cross span b {
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+}
+
+/* Air Quality */
+.pk-air {
+  display: grid;
+  gap: 3px;
+}
+
 .pk-aqi-row {
   display: grid;
-  grid-template-columns: 44px 1fr auto auto;
+  grid-template-columns: 46px 1fr auto auto;
   align-items: center;
-  gap: 8px;
-  padding: 4px 0;
+  gap: 10px;
+  padding: 6px 4px;
   border-bottom: 1px solid var(--border-subtle);
   font-size: 12px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
 }
-.pk-aqi-badge { padding: 2px 0; border-radius: 3px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+
+.pk-aqi-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pk-aqi-badge {
+  padding: 3px 0;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
 /* US EPA AQI reference colours */
-.pk-aqi-0 { background: #00e400; color: #000; }
-.pk-aqi-1 { background: #ffff00; color: #000; }
-.pk-aqi-2 { background: #ff7e00; color: #000; }
-.pk-aqi-3 { background: #ff0000; color: #fff; }
-.pk-aqi-4 { background: #8f3f97; color: #fff; }
-.pk-aqi-5 { background: #7e0023; color: #fff; }
-.pk-aqi-label { font-size: 11px; color: var(--text-dim); }
-.pk-aqi-pm { color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.pk-air > .pk-note { margin-top: 6px; }
+.pk-aqi-0 { background: #10b981; color: #022c22; }
+.pk-aqi-1 { background: #facc15; color: #422006; }
+.pk-aqi-2 { background: #fb923c; color: #431407; }
+.pk-aqi-3 { background: #ef4444; color: #ffffff; }
+.pk-aqi-4 { background: #a855f7; color: #ffffff; }
+.pk-aqi-5 { background: #881337; color: #ffffff; }
 
-.pk-brief-list { display: grid; gap: 6px; margin: 6px 0 8px; padding-left: 18px; font-size: 13px; line-height: 1.45; }
-.pk-brief-list a { color: var(--text); text-decoration: none; }
-.pk-brief-list a:hover { text-decoration: underline; }
+.pk-aqi-label {
+  font-size: 11px;
+  color: var(--text-dim);
+}
 
-.pk-urdu { direction: rtl; unicode-bidi: isolate; font-size: 0.8em; color: var(--text-dim); }
+.pk-aqi-pm {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-size: 11px;
+}
 
-.pk-incident { display: grid; gap: 2px; }
-.pk-level-critical .pk-badge, .pk-level-high .pk-badge { color: var(--semantic-critical); }
-.pk-map-btn { justify-self: start; padding: 0 6px; border: 1px solid var(--border); border-radius: 3px; background: none; color: var(--text-dim); font-size: 10px; cursor: pointer; }
-.pk-map-btn:hover { color: var(--text); }
+.pk-air > .pk-note {
+  margin-top: 8px;
+}
 
+/* Brief & lists */
+.pk-brief-list {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 8px;
+  padding-left: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pk-brief-list li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.pk-brief-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-size: 7px;
+  color: var(--pk-green);
+}
+
+.pk-brief-list a {
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.pk-brief-list a:hover {
+  color: #86efac;
+  text-decoration: underline;
+}
+
+/* Urdu typography */
+.pk-urdu {
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-family: 'Noto Nastaliq Urdu', 'Urdu Typesetting', sans-serif;
+  font-size: 0.95em;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* Incidents by Province */
+.pk-incident {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.pk-incident:hover {
+  background: rgba(47, 191, 113, 0.06);
+  border-color: rgba(47, 191, 113, 0.3);
+  transform: translateX(2px);
+}
+
+.pk-level-critical .pk-badge,
+.pk-level-high .pk-badge {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.pk-map-btn {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 9px;
+  border: 1px solid rgba(47, 191, 113, 0.35);
+  border-radius: 12px;
+  background: rgba(47, 191, 113, 0.08);
+  color: #86efac;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pk-map-btn::before {
+  content: '⌖';
+  font-size: 12px;
+  line-height: 1;
+}
+
+.pk-map-btn:hover {
+  background: rgba(47, 191, 113, 0.22);
+  border-color: var(--pk-green);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(47, 191, 113, 0.35);
+}
+
+/* District panel */
+.pk-district {
+  display: grid;
+  gap: 8px;
+}

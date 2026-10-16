@@ -1,27 +1,130 @@
 /* Pakistan Monitor, Track B panels. Unlayered, like pakistan.css. */
 
-/* Urdu headlines read right-to-left. */
+/* Urdu headlines read right-to-left with beautiful calligraphy. */
 .panel[data-panel="urdu"] .item-title {
   direction: rtl;
   unicode-bidi: plaintext;
   text-align: right;
   font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'Segoe UI', sans-serif;
-  line-height: 1.9;
+  font-size: 15px;
+  line-height: 2.2;
+  color: #f1f5f9;
+  transition: color 0.15s ease;
 }
 
-.pk-wx { display: grid; gap: 6px; }
-.pk-wx-row { display: grid; grid-template-columns: 20px 1fr auto auto; align-items: center; gap: 8px; font-size: 12px; padding: 3px 0; border-bottom: 1px solid var(--border-subtle); }
-.pk-wx-city { font-weight: 600; }
-.pk-wx-severe { color: var(--semantic-critical); }
+.panel[data-panel="urdu"] .feed-item:hover .item-title {
+  color: #86efac;
+}
 
-.pk-dis-row { display: grid; grid-template-columns: 20px 1fr auto; gap: 2px 8px; align-items: baseline; }
-.pk-dis-row .pk-note { grid-column: 2 / -1; }
-.pk-alert-red { color: var(--semantic-critical); }
-.pk-alert-orange { color: var(--semantic-high); }
-.pk-alert-green { color: var(--semantic-positive); }
+.panel[data-panel="urdu"] .feed-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  transition: background 0.15s ease;
+}
 
-.pk-index-table { display: grid; gap: 2px; margin: 6px 0; }
-.pk-index-row { display: grid; grid-template-columns: 1fr auto 64px; gap: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
-.pk-index-row span:last-child { text-align: right; }
+.panel[data-panel="urdu"] .feed-item:hover {
+  background: rgba(47, 191, 113, 0.05);
+}
 
+.pk-wx {
+  display: grid;
+  gap: 8px;
+}
 
+.pk-wx-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.pk-wx-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pk-wx-city {
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  color: #f8fafc;
+}
+
+.pk-wx-severe {
+  background: rgba(239, 68, 68, 0.08);
+  border-left: 3px solid #ef4444;
+  color: #fca5a5;
+}
+
+.pk-dis-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 3px 10px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.15s ease;
+}
+
+.pk-dis-row:hover {
+  border-color: rgba(47, 191, 113, 0.25);
+  background: rgba(47, 191, 113, 0.04);
+}
+
+.pk-dis-row .pk-note {
+  grid-column: 2 / -1;
+}
+
+.pk-alert-red {
+  color: #f87171;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.pk-alert-orange {
+  color: #fb923c;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(249, 115, 22, 0.35);
+}
+
+.pk-alert-green {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.pk-index-table {
+  display: grid;
+  gap: 3px;
+  margin: 8px 0;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pk-index-row {
+  display: grid;
+  grid-template-columns: 1fr auto 68px;
+  gap: 10px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.pk-index-row:hover {
+  background: rgba(47, 191, 113, 0.08);
+}
+
+.pk-index-row span:last-child {
+  text-align: right;
+  font-weight: 600;
+}
