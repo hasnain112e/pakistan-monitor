@@ -34,3 +34,29 @@ describe('parseKse100', () => {
     assert.equal(parseKse100('<html>maintenance</html>'), null);
   });
 });
+
+import { parseForecast, weatherWarnings } from '../src/services/pk-weather';
+
+describe('weatherWarnings', () => {
+  const day = { date: '2026-10-16', maxTempC: 38, feelsLikeMaxC: 46, rainMm: 30, gustKmh: 40, minVisibilityM: 150 };
+  it('flags heat, rain and fog with severity, and skips calm wind', () => {
+    assert.deepEqual(weatherWarnings(day).map((w) => `${w.kind}:${w.severe}`), ['heat:true', 'rain:false', 'fog:true']);
+  });
+  it('is quiet on a calm day', () => {
+    assert.deepEqual(weatherWarnings({ ...day, feelsLikeMaxC: 30, rainMm: 0, minVisibilityM: 10000 }), []);
+  });
+});
+
+describe('parseForecast', () => {
+  it('maps daily values and folds hourly visibility into a per-day minimum', () => {
+    const body = [{
+      daily: { time: ['2026-10-16', '2026-10-17'], temperature_2m_max: [35, 36], apparent_temperature_max: [37, 38], precipitation_sum: [0, 12], wind_gusts_10m_max: [20, 55] },
+      hourly: { time: ['2026-10-16T00:00', '2026-10-16T06:00', '2026-10-17T06:00'], visibility: [24000, 800, 5000] },
+    }];
+    const [lahore] = parseForecast(body);
+    assert.equal(lahore?.name, 'Lahore');
+    assert.deepEqual(lahore?.days.map((d) => d.minVisibilityM), [800, 5000]);
+    assert.equal(lahore?.days[1]?.gustKmh, 55);
+  });
+});
+

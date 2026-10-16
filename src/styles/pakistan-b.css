@@ -8,3 +8,9 @@
   font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'Segoe UI', sans-serif;
   line-height: 1.9;
 }
+
+.pk-wx { display: grid; gap: 6px; }
+.pk-wx-row { display: grid; grid-template-columns: 20px 1fr auto auto; align-items: center; gap: 8px; font-size: 12px; padding: 3px 0; border-bottom: 1px solid var(--border-subtle); }
+.pk-wx-city { font-weight: 600; }
+.pk-wx-severe { color: var(--semantic-critical); }
+
