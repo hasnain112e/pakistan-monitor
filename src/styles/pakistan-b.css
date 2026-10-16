@@ -14,3 +14,9 @@
 .pk-wx-city { font-weight: 600; }
 .pk-wx-severe { color: var(--semantic-critical); }
 
+.pk-dis-row { display: grid; grid-template-columns: 20px 1fr auto; gap: 2px 8px; align-items: baseline; }
+.pk-dis-row .pk-note { grid-column: 2 / -1; }
+.pk-alert-red { color: var(--semantic-critical); }
+.pk-alert-orange { color: var(--semantic-high); }
+.pk-alert-green { color: var(--semantic-positive); }
+

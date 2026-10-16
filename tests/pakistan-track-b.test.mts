@@ -60,3 +60,28 @@ describe('parseForecast', () => {
   });
 });
 
+import { gdacsForPakistan, usgsNearPakistan } from '../src/services/pk-disasters';
+
+describe('gdacsForPakistan', () => {
+  it('keeps events whose country or affected countries include Pakistan', () => {
+    const body = { features: [
+      { properties: { eventid: 1, name: 'Flood in Pakistan', iso3: 'PAK', alertlevel: 'Orange', fromdate: '2026-10-10T00:00:00', url: { report: 'https://www.gdacs.org/report.aspx?eventid=1' } } },
+      { properties: { eventid: 2, name: 'Cyclone Arabian Sea', iso3: 'OMN', affectedcountries: [{ iso3: 'OMN' }, { iso3: 'PAK' }], alertlevel: 'Green', fromdate: '2026-10-11T00:00:00', url: {} } },
+      { properties: { eventid: 3, name: 'Flood in Ecuador', iso3: 'ECU', alertlevel: 'Green', fromdate: '2026-10-12T00:00:00' } },
+    ] };
+    const events = gdacsForPakistan(body, 'FL');
+    assert.deepEqual(events.map((e) => e.title), ['Flood in Pakistan', 'Cyclone Arabian Sea']);
+    assert.equal(events[0]?.alert, 'Orange');
+    assert.equal(events[1]?.url, 'https://www.gdacs.org/');
+  });
+});
+
+describe('usgsNearPakistan', () => {
+  it('turns quakes into titled events', () => {
+    const [e] = usgsNearPakistan({ features: [{ id: 'us1', properties: { mag: 4.6, place: '30 km N of Quetta, Pakistan', time: Date.parse('2026-10-15T00:00:00Z'), url: 'https://earthquake.usgs.gov/x' } }] });
+    assert.equal(e?.title, 'M4.6 · 30 km N of Quetta, Pakistan');
+    assert.equal(e?.startedAt, '2026-10-15T00:00:00.000Z');
+  });
+});
+
+
