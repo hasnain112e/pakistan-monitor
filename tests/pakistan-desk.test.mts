@@ -159,5 +159,49 @@ describe('pakistanIncidents', () => {
   });
 });
 
+import { buildObsidianGraph, generateObsidianVaultMarkdown } from '../src/services/pk-obsidian-graph';
+
+describe('buildObsidianGraph', () => {
+  const item = (title: string, link: string, category: string) => ({
+    source: 'Dawn', title, link, pubDate: new Date('2026-10-15T10:00:00Z'), isAlert: false,
+    threat: { level: 'high', category, confidence: 0.8, source: 'keyword' },
+  }) as import('../src/types').NewsItem;
+
+  it('builds nodes for provinces, topics and places, and links them', () => {
+    const items = [
+      item('Blast in Quetta kills five', '1', 'terrorism'),
+      item('Lahore smog worsens', '2', 'health'),
+    ];
+    const graph = buildObsidianGraph(items);
+    assert.ok(graph.nodes.some((n) => n.id === 'prov:Balochistan'));
+    assert.ok(graph.nodes.some((n) => n.id === 'prov:Punjab'));
+    assert.ok(graph.nodes.some((n) => n.id === 'topic:security'));
+    assert.ok(graph.links.length > 0);
+  });
+});
+
+describe('generateObsidianVaultMarkdown', () => {
+  const item = (title: string, link: string, category: string) => ({
+    source: 'Dawn', title, link, pubDate: new Date('2026-10-15T10:00:00Z'), isAlert: false,
+    threat: { level: 'high', category, confidence: 0.8, source: 'keyword' },
+  }) as import('../src/types').NewsItem;
+
+  it('generates valid markdown with Obsidian callouts and wikilinks', () => {
+    const md = generateObsidianVaultMarkdown({
+      date: '2026-10-16',
+      items: [item('Protest in Lahore over prices', 'p1', 'protest')],
+      kse100: 166419,
+      usdPkr: 280.25,
+      goldTola: 285000,
+    });
+    assert.ok(md.includes('> [!INFO]'));
+    assert.ok(md.includes('> [!SUCCESS]'));
+    assert.ok(md.includes('> [!CRITICAL]'));
+    assert.ok(md.includes('[[Punjab]]'));
+    assert.ok(md.includes('[[Lahore]]'));
+    assert.ok(md.includes('166,419'));
+  });
+});
+
 
 

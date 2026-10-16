@@ -2640,6 +2640,8 @@ export class PanelLayoutManager implements AppModule {
       (PakistanIncidentsPanel) => new PakistanIncidentsPanel(allNews, (lat, lon) => this.ctx.map?.setCenter(lat, lon, 8)));
     this.lazyImportedPanel('pk-district', () => import('@/components/PakistanDistrictPanel'), 'PakistanDistrictPanel',
       (PakistanDistrictPanel) => new PakistanDistrictPanel(allNews));
+    this.lazyImportedPanel('pk-graph', () => import('@/components/PakistanObsidianGraphPanel'), 'PakistanObsidianGraphPanel',
+      (PakistanObsidianGraphPanel) => new PakistanObsidianGraphPanel(allNews, (lat, lon) => this.ctx.map?.setCenter(lat, lon, 8)));
 
     this.createNewsPanel('politics', 'panels.politics');
     this.createNewsPanel('tech', 'panels.tech');

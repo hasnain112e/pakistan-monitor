@@ -160,6 +160,7 @@ export const COMMANDS: Command[] = [
   { id: 'panel:pk-weather', keywords: ['weather', 'pakistan weather', 'rain', 'heatwave', 'fog'], label: 'Panel: Weather Warnings', icon: '\u{1F327}\uFE0F', category: 'panels' },
   { id: 'panel:pk-disasters', keywords: ['disasters', 'floods', 'earthquakes', 'ndma', 'cyclone'], label: 'Panel: Disasters', icon: '\u{1F30A}', category: 'panels' },
   { id: 'panel:pk-district', keywords: ['district', 'pakistan districts', 'zila', 'regions'], label: 'Panel: District', icon: '\u{1F5FA}\uFE0F', category: 'panels' },
+  { id: 'panel:pk-graph', keywords: ['obsidian', 'knowledge graph', 'graph view', 'intel graph', 'network', 'entities'], label: 'Panel: Obsidian Intel Graph', icon: '🕸️', category: 'panels' },
   { id: 'panel:live-webcams', keywords: ['webcams', 'live cameras', 'cctv'], label: 'Panel: Live Webcams', icon: '\u{1F4F7}', category: 'panels' },
   { id: 'panel:windy-webcams', keywords: ['windy', 'weather cam', 'weather webcam', 'weather cameras'], label: 'Panel: Live Weather Cams', icon: '\u{1F4F9}', category: 'panels' },
   { id: 'panel:chat-analyst', keywords: ['wm analyst', 'analyst', 'ai analyst', 'chat analyst', 'ask ai', 'intelligence analyst'], label: 'Panel: WM Analyst', icon: '\u{1F916}', category: 'panels' },
