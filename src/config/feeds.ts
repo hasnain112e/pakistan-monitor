@@ -65,6 +65,19 @@ export function getSourcePanelId(sourceName: string): string {
 // Exported for the geographic coverage audit (scripts/geo-coverage-health.mjs,
 // #5957) — the full-variant news catalog is the reference set the audit counts.
 export const FULL_FEEDS: Record<string, Feed[]> = {
+  // Pakistan Monitor's primary desk. Declared first: the free source cap
+  // consumes declaration order, so these win any cap eviction.
+  pakistan: [
+    { name: 'Dawn', url: rss('https://www.dawn.com/feeds/home/') },
+    { name: 'Geo News', url: rss('https://news.google.com/rss/search?q=site:geo.tv+when:2d&hl=en-US&gl=US&ceid=US:en') },
+    { name: 'Express Tribune', url: rss('https://tribune.com.pk/feed/home') },
+    { name: 'The News International', url: rss('https://www.thenews.com.pk/rss/1/1') },
+    { name: 'Business Recorder', url: rss('https://www.brecorder.com/feeds/latest-news') },
+    { name: 'ARY News', url: rss('https://arynews.tv/feed/') },
+    { name: 'APP News', url: rss('https://www.app.com.pk/feed/') },
+    { name: 'ProPakistani', url: rss('https://propakistani.pk/feed/') },
+    { name: 'Daily Times', url: rss('https://dailytimes.com.pk/feed/') },
+  ],
   politics: [
     { name: 'BBC World', url: rss('https://feeds.bbci.co.uk/news/world/rss.xml') },
     { name: 'Guardian World', url: rss('https://www.theguardian.com/world/rss') },
@@ -545,9 +558,6 @@ export const FULL_FEEDS: Record<string, Feed[]> = {
     { name: 'Focus Taiwan', url: rss('https://news.google.com/rss/search?q=site%3Afocustaiwan.tw%20when%3A3d&hl=en-US&gl=US&ceid=US:en') },
     { name: 'Taipei Times', url: rss('https://news.google.com/rss/search?q=site%3Ataipeitimes.com%20when%3A3d&hl=en-US&gl=US&ceid=US:en') },
     { name: 'Taiwan News', url: rss('https://news.google.com/rss/search?q=site%3Ataiwannews.com.tw%20when%3A3d&hl=en-US&gl=US&ceid=US:en') },
-    // Pakistan (#5954)
-    { name: 'Dawn', url: rss('https://www.dawn.com/feeds/home/') },
-    { name: 'Geo News', url: rss('https://news.google.com/rss/search?q=site:geo.tv+when:2d&hl=en-US&gl=US&ceid=US:en') },
     // SE Asia security (#5954)
     { name: 'Jakarta Post', url: rss('https://news.google.com/rss/search?q=site%3Athejakartapost.com%20when%3A3d&hl=en-US&gl=US&ceid=US:en') },
     { name: 'Rappler', url: rss('https://www.rappler.com/feed/') },
@@ -1153,7 +1163,7 @@ export const SOURCE_REGION_MAP: Record<string, { labelKey: string; feedKeys: str
   middleeast: { labelKey: 'header.sourceRegionMiddleEast', feedKeys: ['middleeast'] },
   africa: { labelKey: 'header.sourceRegionAfrica', feedKeys: ['africa'] },
   latam: { labelKey: 'header.sourceRegionLatAm', feedKeys: ['latam'] },
-  asia: { labelKey: 'header.sourceRegionAsiaPacific', feedKeys: ['asia'] },
+  asia: { labelKey: 'header.sourceRegionAsiaPacific', feedKeys: ['pakistan', 'asia'] },
   topical: { labelKey: 'header.sourceRegionTopical', feedKeys: ['energy', 'tech', 'ai', 'finance', 'layoffs', 'thinktanks'] },
   intel: { labelKey: 'header.sourceRegionIntel', feedKeys: [] },
 
@@ -1603,6 +1613,7 @@ export function getStrategicDefaultSources(): Set<string> {
  * so it is fetched regardless of the user's UI language.
  */
 export const DEFAULT_ENABLED_SOURCES: Record<string, string[]> = {
+  pakistan: ['Dawn', 'Geo News', 'Express Tribune', 'The News International', 'Business Recorder', 'ARY News', 'APP News', 'ProPakistani', 'Daily Times'],
   politics: ['BBC World', 'Guardian World', 'AP News', 'Reuters World', 'CNN World'],
   // Canada pack (#5960/#6604/#6605): CBC News + CTV News + Toronto Star
   // default-on for North America keyCountry CA (floors.CA = 3). Globe and Mail

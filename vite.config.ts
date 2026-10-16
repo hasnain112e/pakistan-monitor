@@ -799,6 +799,55 @@ function miitNewsPlugin(): Plugin {
   };
 }
 
+// Pakistan Monitor dev routes: run the edge handlers in-process and forward
+// method + body so the POST brief route works. Loaded with native import(), like
+// sebufApiPlugin, because ssrLoadModule cannot evaluate the CJS in pk-brief's
+// server/_shared import chain.
+type EdgeHandlerModule = { default: (req: Request) => Promise<Response> };
+function pakistanApiPlugin(): Plugin {
+  const routes: Record<string, () => Promise<EdgeHandlerModule>> = {
+    '/api/pk-kse100': () => import('./api/pk-kse100.js') as Promise<EdgeHandlerModule>,
+    '/api/pk-gold': () => import('./api/pk-gold.js') as Promise<EdgeHandlerModule>,
+    '/api/pk-brief': () => import('./api/pk-brief'),
+  };
+  return {
+    name: 'pakistan-api',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const loadHandler = routes[req.url?.split('?')[0] ?? ''];
+        if (!loadHandler) return next();
+        try {
+          const chunks: Buffer[] = [];
+          for await (const chunk of req) chunks.push(Buffer.from(chunk));
+          const headers = new Headers();
+          for (const name of ['origin', 'content-type']) {
+            const value = req.headers[name];
+            if (typeof value === 'string') headers.set(name, value);
+          }
+          const method = req.method ?? 'GET';
+          // Surface a client disconnect as req.signal, as the edge runtime does.
+          const disconnected = new AbortController();
+          res.on('close', () => { if (!res.writableFinished) disconnected.abort(); });
+          const { default: handler } = await loadHandler();
+          const response = await handler(new Request(`http://localhost${req.url}`, {
+            method,
+            headers,
+            body: method === 'GET' || method === 'HEAD' ? undefined : Buffer.concat(chunks).toString('utf8'),
+            signal: disconnected.signal,
+          }));
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => res.setHeader(key, value));
+          res.end(method === 'HEAD' ? undefined : await response.text());
+        } catch (error) {
+          console.error('[pakistan-api]', error);
+          res.statusCode = 502;
+          res.end();
+        }
+      });
+    },
+  };
+}
+
 function rssProxyPlugin(): Plugin {
   return {
     name: 'rss-proxy',
@@ -1001,6 +1050,7 @@ export default defineConfig(({ mode }) => {
       polymarketPlugin(),
       rssProxyPlugin(),
       miitNewsPlugin(),
+      pakistanApiPlugin(),
       gpsjamDevPlugin(),
       sebufApiPlugin(),
       brotliPrecompressPlugin(),

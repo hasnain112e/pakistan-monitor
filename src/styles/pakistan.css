@@ -1,0 +1,83 @@
+/* Pakistan Monitor: theme + Pakistan desk panels.
+   Unlayered, so it wins over main.css (wrapped in @layer base by base-layer.css).
+   Scoped to the main edition; the upstream variants keep their own looks. */
+
+:root:not([data-variant]):not([data-theme="light"]),
+:root[data-variant="full"]:not([data-theme="light"]) {
+  --pk-green: #2fbf71; /* flag green #01411C, lifted for contrast on dark */
+  --bg: #060d09;
+  --bg-secondary: #0a140e;
+  --surface: #0d1811;
+  --surface-hover: #132219;
+  --panel-bg: #0d1811;
+  --border: #1d3024;
+  --border-subtle: #12201a;
+  --panel-border: #1d3024;
+  --green: var(--pk-green);
+  --status-live: var(--pk-green);
+  --semantic-positive: var(--pk-green);
+}
+
+:root[data-theme="light"]:not([data-variant]),
+:root[data-theme="light"][data-variant="full"] {
+  --pk-green: #01411c;
+  --green: #0f7a3d;
+  --status-live: #0f7a3d;
+  --semantic-positive: #0f7a3d;
+}
+
+.pk-note { font-size: 11px; color: var(--text-dim); }
+.pk-warn { color: var(--semantic-elevated); }
+.pk-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.pk-badge-warn { color: var(--semantic-elevated); }
+
+.pk-markets { display: grid; gap: 14px; padding: 4px 2px; }
+.pk-stat-label { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; }
+.pk-stat-value { font-size: 26px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.pk-stat-change { font-size: 13px; font-variant-numeric: tabular-nums; }
+.pk-up { color: var(--semantic-positive); }
+.pk-down { color: var(--semantic-critical); }
+.pk-cross {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 4px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pk-air { display: grid; gap: 2px; }
+.pk-aqi-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+}
+.pk-aqi-badge { padding: 2px 0; border-radius: 3px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+/* US EPA AQI reference colours */
+.pk-aqi-0 { background: #00e400; color: #000; }
+.pk-aqi-1 { background: #ffff00; color: #000; }
+.pk-aqi-2 { background: #ff7e00; color: #000; }
+.pk-aqi-3 { background: #ff0000; color: #fff; }
+.pk-aqi-4 { background: #8f3f97; color: #fff; }
+.pk-aqi-5 { background: #7e0023; color: #fff; }
+.pk-aqi-label { font-size: 11px; color: var(--text-dim); }
+.pk-aqi-pm { color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pk-air > .pk-note { margin-top: 6px; }
+
+.pk-brief-list { display: grid; gap: 6px; margin: 6px 0 8px; padding-left: 18px; font-size: 13px; line-height: 1.45; }
+.pk-brief-list a { color: var(--text); text-decoration: none; }
+.pk-brief-list a:hover { text-decoration: underline; }

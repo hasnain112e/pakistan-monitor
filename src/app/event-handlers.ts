@@ -114,8 +114,7 @@ import { evaluatePlaybackGate } from '@/services/gates/playback';
 import { resolveGateAction, type PanelGateReason } from '@/services/panel-gating';
 import { ExportGateControl } from '@/components/ExportGateControl';
 import { h, setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
-import { scheduleAfterFirstPaint } from '@/utils/after-paint';
-import { declareOverlay, isModalOpen } from '@/utils/open-modal';
+import { declareOverlay } from '@/utils/open-modal';
 import {
   isAgentAnalyticsSuppressed,
   isAgentPanelViewSuppressed,
@@ -909,32 +908,9 @@ export class EventHandlerManager implements AppModule {
   }
 
   private setupMissionPresets(): void {
+    // Pakistan Monitor: no first-visit auto-open. The upstream workspaces are
+    // global presets that cover the Pakistan map; the Mission button still opens them.
     this.renderMissionPresetControl();
-
-    const shouldPrompt =
-      !this.ctx.isMobile &&
-      !window.location.search &&
-      !loadStoredMissionPreset() &&
-      !isMissionPresetPromptDismissed();
-    if (shouldPrompt) {
-      // Defer the onboarding auto-open to browser idle after first paint so it
-      // never competes with load or first-interaction work. This replaced a
-      // fixed 700ms timeout that forced layout reads (getBoundingClientRect +
-      // offsetHeight) on the post-load path. Re-check state at fire time since
-      // the idle wait can outlast an early user choice.
-      //
-      // That includes a modal the user opened first. On a slow machine the
-      // idle period lands after it; the prompt then took focus and swallowed
-      // the modal's Escape (its keydown handler stops propagation), leaving the
-      // modal impossible to close from the keyboard. Skipping costs nothing:
-      // an undismissed prompt re-appears on the next load.
-      scheduleAfterFirstPaint(() => {
-        if (this.ctx.isDestroyed) return;
-        if (this.missionPresetPopover || loadStoredMissionPreset() || isMissionPresetPromptDismissed()) return;
-        if (isModalOpen(document)) return;
-        this.openMissionPresetPopover(document.getElementById('missionPresetBtn'), false, 'auto');
-      });
-    }
   }
 
   private renderMissionPresetControl(): void {

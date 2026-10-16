@@ -3,6 +3,27 @@
   "schema_version": 1,
   "exceptions": [
     {
+      "path": "api/pk-kse100.js",
+      "category": "upstream-proxy",
+      "reason": "Pakistan Monitor: reads the KSE-100 row from the PSX Data Portal indices page (no public JSON API, no CORS) and serves the last good quote marked stale on failure.",
+      "owner": "@pakistan-monitor",
+      "removal_issue": null
+    },
+    {
+      "path": "api/pk-brief.ts",
+      "category": "internal-helper",
+      "reason": "Pakistan Monitor: dashboard-internal AI brief over the Pakistan headlines the panel already loaded, via local Ollama or an OpenAI-compatible endpoint.",
+      "owner": "@pakistan-monitor",
+      "removal_issue": null
+    },
+    {
+      "path": "api/pk-gold.js",
+      "category": "upstream-proxy",
+      "reason": "Pakistan Monitor: reads the per-tola gold row from forex.pk (no CORS, no JSON API) and serves the last good value marked stale on failure.",
+      "owner": "@pakistan-monitor",
+      "removal_issue": null
+    },
+    {
       "path": "api/miit-news.js",
       "category": "non-json",
       "reason": "Adapts the fixed official MIIT dated news listing to RSS/XML for the existing browser and server feed readers. Success responses use application/rss+xml; the RSS transport cannot use a JSON proto envelope.",

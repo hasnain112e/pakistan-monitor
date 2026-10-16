@@ -33,6 +33,7 @@ export const LAYER_KEY_MAP: Record<string, keyof MapLayers> = {
 
 export const COMMANDS: Command[] = [
   // Navigation (region switching)
+  { id: 'nav:pakistan', keywords: ['pakistan', 'pk'], label: 'Map: Pakistan', icon: '\u{1F1F5}\u{1F1F0}', category: 'navigate' },
   { id: 'nav:global', keywords: ['global', 'world', 'reset', 'home'], label: 'Map: Global view', icon: '\u{1F30D}', category: 'navigate' },
   { id: 'nav:mena', keywords: ['mena', 'middle east', 'mideast'], label: 'Map: Middle East & North Africa', icon: '\u{1F54C}', category: 'navigate' },
   { id: 'nav:eu', keywords: ['europe', 'eu'], label: 'Map: Europe', icon: '\u{1F3F0}', category: 'navigate' },
@@ -150,6 +151,15 @@ export const COMMANDS: Command[] = [
   { id: 'panel:stablecoins', keywords: ['stablecoins', 'usdt', 'usdc'], label: 'Panel: Stablecoins', icon: '\u{1FA99}', category: 'panels' },
   { id: 'panel:monitors', keywords: ['monitors', 'my monitors', 'watchlist'], label: 'Panel: My Monitors', icon: '\u{1F4CB}', category: 'panels' },
   { id: 'panel:map', keywords: ['map', 'globe', 'global map'], label: 'Panel: Global Map', icon: '\u{1F5FA}\uFE0F', category: 'panels' },
+  { id: 'panel:pakistan', keywords: ['pakistan', 'pakistan news', 'islamabad', 'lahore', 'karachi'], label: 'Panel: Pakistan News', icon: '\u{1F1F5}\u{1F1F0}', category: 'panels' },
+  { id: 'panel:urdu', keywords: ['urdu', 'urdu news', 'khabrain', 'jang', 'express urdu'], label: 'Panel: Urdu News', icon: '\u{1F4F0}', category: 'panels' },
+  { id: 'panel:pk-brief', keywords: ['pk brief', 'ai brief', 'pakistan brief', 'sitrep', 'summary'], label: 'Panel: AI Brief', icon: '\u{1F916}', category: 'panels' },
+  { id: 'panel:pk-incidents', keywords: ['incidents', 'pakistan incidents', 'security incidents', 'protests', 'terrorism'], label: 'Panel: Incidents', icon: '\u{1F6A8}', category: 'panels' },
+  { id: 'panel:pk-markets', keywords: ['psx', 'kse100', 'rupee', 'pkr', 'pakistan markets'], label: 'Panel: Markets & Rupee', icon: '\u{1F4C8}', category: 'panels' },
+  { id: 'panel:pk-air', keywords: ['air quality', 'smog', 'aqi', 'lahore smog', 'pollution'], label: 'Panel: Air Quality', icon: '\u{1F32B}\uFE0F', category: 'panels' },
+  { id: 'panel:pk-weather', keywords: ['weather', 'pakistan weather', 'rain', 'heatwave', 'fog'], label: 'Panel: Weather Warnings', icon: '\u{1F327}\uFE0F', category: 'panels' },
+  { id: 'panel:pk-disasters', keywords: ['disasters', 'floods', 'earthquakes', 'ndma', 'cyclone'], label: 'Panel: Disasters', icon: '\u{1F30A}', category: 'panels' },
+  { id: 'panel:pk-district', keywords: ['district', 'pakistan districts', 'zila', 'regions'], label: 'Panel: District', icon: '\u{1F5FA}\uFE0F', category: 'panels' },
   { id: 'panel:live-webcams', keywords: ['webcams', 'live cameras', 'cctv'], label: 'Panel: Live Webcams', icon: '\u{1F4F7}', category: 'panels' },
   { id: 'panel:windy-webcams', keywords: ['windy', 'weather cam', 'weather webcam', 'weather cameras'], label: 'Panel: Live Weather Cams', icon: '\u{1F4F9}', category: 'panels' },
   { id: 'panel:chat-analyst', keywords: ['wm analyst', 'analyst', 'ai analyst', 'chat analyst', 'ask ai', 'intelligence analyst'], label: 'Panel: WM Analyst', icon: '\u{1F916}', category: 'panels' },

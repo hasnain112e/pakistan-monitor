@@ -1,0 +1,60 @@
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
+import { briefEndpoints, parseBullets } from '../api/pk-brief';
+import { aqiBand, pkrRates } from '../src/services/pakistan-desk';
+
+describe('parseBullets', () => {
+  it('keeps marked lines and drops preamble and bold markers', () => {
+    assert.deepEqual(parseBullets('Here is the brief:\n- **IMF** tranche approved\n* Karachi floods\n1. KSE-100 dips\n• Smog in Lahore'),
+      ['IMF tranche approved', 'Karachi floods', 'KSE-100 dips', 'Smog in Lahore']);
+  });
+
+  it('falls back to plain lines and caps at five', () => {
+    assert.deepEqual(parseBullets('a\nb\n\nc\nd\ne\nf'), ['a', 'b', 'c', 'd', 'e']);
+  });
+});
+
+describe('briefEndpoints', () => {
+  it('tries Ollama first, then the OpenAI-compatible endpoint', () => {
+    const endpoints = briefEndpoints({
+      PK_BRIEF_OLLAMA_URL: 'http://localhost:11434',
+      PK_BRIEF_LLM_URL: 'https://api.groq.com/openai/v1/chat/completions',
+      PK_BRIEF_LLM_KEY: 'gsk_test',
+      PK_BRIEF_LLM_MODEL: 'llama-3.1-8b-instant',
+    });
+    assert.deepEqual(endpoints.map((e) => [e.provider, e.url, e.model]), [
+      ['ollama', 'http://localhost:11434/v1/chat/completions', 'qwen2.5:3b-instruct'],
+      ['api.groq.com', 'https://api.groq.com/openai/v1/chat/completions', 'llama-3.1-8b-instant'],
+    ]);
+    assert.equal(endpoints[1]?.key, 'gsk_test');
+  });
+
+  it('skips an OpenAI-compatible URL without a model, and needs some config', () => {
+    assert.deepEqual(briefEndpoints({ PK_BRIEF_LLM_URL: 'https://api.groq.com/openai/v1/chat/completions' }), []);
+    assert.deepEqual(briefEndpoints({}), []);
+  });
+});
+
+describe('aqiBand', () => {
+  it('uses the US EPA breakpoints', () => {
+    assert.equal(aqiBand(50).level, 0);
+    assert.equal(aqiBand(51).level, 1);
+    assert.equal(aqiBand(150).level, 2);
+    assert.equal(aqiBand(151).label, 'Unhealthy');
+    assert.equal(aqiBand(301).level, 5);
+    assert.equal(aqiBand(999).label, 'Hazardous');
+  });
+});
+
+describe('pkrRates', () => {
+  it('derives PKR per unit from USD-based quotes and skips bad values', () => {
+    const rates = pkrRates({ PKR: 280, EUR: 0.875, SAR: 3.75, AED: 'n/a' });
+    assert.equal(rates?.usd, 280);
+    assert.deepEqual(rates?.crosses, [{ code: 'EUR', pkr: 320 }, { code: 'SAR', pkr: 280 / 3.75 }]);
+  });
+
+  it('returns null without a positive PKR quote', () => {
+    assert.equal(pkrRates({ EUR: 0.9 }), null);
+    assert.equal(pkrRates({ PKR: 0 }), null);
+  });
+});

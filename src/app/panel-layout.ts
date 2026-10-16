@@ -229,13 +229,12 @@ const WEB_CLERK_PRO_ONLY_PANELS = new Set([
 const LATE_REGISTERED_PANEL_KEYS = new Set(['live-news']);
 const CW_PRO_GATE_TAB_RECOVERY_KEY = 'worldmonitor-cw-pro-gate-tab-recovery-v1';
 
-const DASHBOARD_REFERENCE_LINKS = [
-  { label: 'Countries', path: '/countries/' },
-  { label: 'Chokepoints', path: '/chokepoints/' },
-  { label: 'Crises', path: '/crises/' },
-  { label: 'Tools', path: '/tools/' },
-  { label: 'Accuracy', path: '/accuracy/' },
-] as const;
+// AGPL-3.0 section 13: network users must be offered the source. Point the first
+// link at your own fork once it is published; it starts at the upstream repo.
+const PAKISTAN_FOOTER_LINKS_HTML = [
+  '<a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener">Source code</a>',
+  '<a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">License (AGPL-3.0)</a>',
+].join('');
 
 export const VARIANT_SWITCHER_DASHBOARD_URLS = {
   full: 'https://www.worldmonitor.app/dashboard',
@@ -1050,13 +1049,6 @@ export class PanelLayoutManager implements AppModule {
       }
     })();
     const bootShellFootprint = import.meta.env.DEV ? captureBootShellFootprint(this.ctx.container) : null;
-    const referenceOrigin = this.ctx.isDesktopApp || window.location.hostname.endsWith('.worldmonitor.app')
-      ? 'https://www.worldmonitor.app'
-      : '';
-    const referenceLinksHtml = DASHBOARD_REFERENCE_LINKS.map(({ label, path }) => {
-      const href = `${referenceOrigin}${path}`;
-      return `<a href="${href}" target="_blank" rel="noopener">${label}</a>`;
-    }).join('');
 
     markLcpDebug('wm:layout:render-start');
     document.documentElement.classList.add('wm-layout-hydrated');
@@ -1077,61 +1069,12 @@ export class PanelLayoutManager implements AppModule {
                class="variant-option ${SITE_VARIANT === 'full' ? 'active' : ''}"
                data-variant="full"
                ${vTarget('full')}
-               title="${t('header.world')}${SITE_VARIANT === 'full' ? ` ${t('common.currentVariant')}` : ''}">
-              <span class="variant-icon">🌍</span>
-              <span class="variant-label">${t('header.world')}</span>
-            </a>
-            <span class="variant-divider"></span>
-            <a href="${vHref('tech')}"
-               class="variant-option ${SITE_VARIANT === 'tech' ? 'active' : ''}"
-               data-variant="tech"
-               ${vTarget('tech')}
-               title="${t('header.tech')}${SITE_VARIANT === 'tech' ? ` ${t('common.currentVariant')}` : ''}">
-              <span class="variant-icon">💻</span>
-              <span class="variant-label">${t('header.tech')}</span>
-            </a>
-            <span class="variant-divider"></span>
-            <a href="${vHref('finance')}"
-               class="variant-option ${SITE_VARIANT === 'finance' ? 'active' : ''}"
-               data-variant="finance"
-               ${vTarget('finance')}
-               title="${t('header.finance')}${SITE_VARIANT === 'finance' ? ` ${t('common.currentVariant')}` : ''}">
-              <span class="variant-icon">📈</span>
-              <span class="variant-label">${t('header.finance')}</span>
-            </a>
-            <span class="variant-divider"></span>
-            <a href="${vHref('commodity')}"
-               class="variant-option ${SITE_VARIANT === 'commodity' ? 'active' : ''}"
-               data-variant="commodity"
-               ${vTarget('commodity')}
-               title="${t('header.commodity')}${SITE_VARIANT === 'commodity' ? ` ${t('common.currentVariant')}` : ''}">
-              <span class="variant-icon">⛏️</span>
-              <span class="variant-label">${t('header.commodity')}</span>
-            </a>
-            <span class="variant-divider"></span>
-            <a href="${vHref('energy')}"
-               class="variant-option ${SITE_VARIANT === 'energy' ? 'active' : ''}"
-               data-variant="energy"
-               ${vTarget('energy')}
-               title="${t('header.energy')}${SITE_VARIANT === 'energy' ? ` ${t('common.currentVariant')}` : ''}">
-              <span class="variant-icon">⚡</span>
-              <span class="variant-label">${t('header.energy')}</span>
-            </a>
-            <span class="variant-divider"></span>
-            <a href="${vHref('happy')}"
-               class="variant-option ${SITE_VARIANT === 'happy' ? 'active' : ''}"
-               data-variant="happy"
-               ${vTarget('happy')}
-               title="Good News${SITE_VARIANT === 'happy' ? ` ${t('common.currentVariant')}` : ''}">
-              <span class="variant-icon">☀️</span>
-              <span class="variant-label">Good News</span>
+               title="Pakistan${SITE_VARIANT === 'full' ? ` ${t('common.currentVariant')}` : ''}">
+              <span class="variant-icon">🇵🇰</span>
+              <span class="variant-label">Pakistan</span>
             </a>`;
       })()}</div>
-          <span class="logo">MONITOR</span><span class="logo-mobile">World Monitor</span><span class="version">v${__APP_VERSION__}</span>${BETA_MODE ? '<span class="beta-badge">BETA</span>' : ''}
-          <a href="https://x.com/eliehabib" target="_blank" rel="noopener" class="credit-link">
-            <svg class="x-logo" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            <span class="credit-text">@eliehabib</span>
-          </a>
+          <span class="logo">MONITOR</span><span class="logo-mobile">Pakistan Monitor</span><span class="version">v${__APP_VERSION__}</span>${BETA_MODE ? '<span class="beta-badge">BETA</span>' : ''}
           <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener" class="github-link" title="${t('header.viewOnGitHub')}" aria-label="${t('header.viewOnGitHub')}">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           </a>
@@ -1144,6 +1087,7 @@ export class PanelLayoutManager implements AppModule {
           </div>
           <div class="region-selector">
             <select id="regionSelect" class="region-select" aria-label="${t('header.selectRegion')}">
+              <option value="pakistan">Pakistan</option>
               <option value="global">${t('components.deckgl.views.global')}</option>
               <option value="america">${t('components.deckgl.views.americas')}</option>
               <option value="mena">${t('components.deckgl.views.mena')}</option>
@@ -1172,7 +1116,7 @@ export class PanelLayoutManager implements AppModule {
       <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
       <nav class="mobile-menu" id="mobileMenu" aria-label="Menu">
         <div class="mobile-menu-header">
-          <span class="mobile-menu-title">WORLD MONITOR</span>
+          <span class="mobile-menu-title">PAKISTAN MONITOR</span>
           <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -1186,12 +1130,7 @@ export class PanelLayoutManager implements AppModule {
         <div class="mobile-menu-divider"></div>
         ${(() => {
         const variants = [
-          { key: 'full', icon: '🌍', label: t('header.world') },
-          { key: 'tech', icon: '💻', label: t('header.tech') },
-          { key: 'finance', icon: '📈', label: t('header.finance') },
-          { key: 'commodity', icon: '⛏️', label: t('header.commodity') },
-          { key: 'energy', icon: '⚡', label: t('header.energy') },
-          { key: 'happy', icon: '☀️', label: 'Good News' },
+          { key: 'full', icon: '🇵🇰', label: 'Pakistan' },
         ];
         return variants.map(v =>
           `<button class="mobile-menu-item mobile-menu-variant ${v.key === SITE_VARIANT ? 'active' : ''}" data-variant="${v.key}">
@@ -1204,7 +1143,7 @@ export class PanelLayoutManager implements AppModule {
         <div class="mobile-menu-divider"></div>
         <button class="mobile-menu-item" id="mobileMenuRegion">
           <span class="mobile-menu-item-icon">🌐</span>
-          <span class="mobile-menu-item-label">${t('components.deckgl.views.global')}</span>
+          <span class="mobile-menu-item-label">Pakistan</span>
           <span class="mobile-menu-chevron">▸</span>
         </button>
         <button class="mobile-menu-item" id="mobileMenuMission">
@@ -1221,18 +1160,8 @@ export class PanelLayoutManager implements AppModule {
           <span class="mobile-menu-item-icon">${getCurrentTheme() === 'dark' ? '☀️' : '🌙'}</span>
           <span class="mobile-menu-item-label">${getCurrentTheme() === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
         </button>
-        <a class="mobile-menu-item" href="https://x.com/eliehabib" target="_blank" rel="noopener">
-          <span class="mobile-menu-item-icon"><svg class="x-logo" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-          <span class="mobile-menu-item-label">@eliehabib</span>
-        </a>
         <div class="mobile-menu-divider"></div>
-        <div class="mobile-menu-footer-links">
-          ${referenceLinksHtml}
-          <a href="${referenceOrigin}/pro#pricing" target="_blank" rel="noopener">Pricing</a>
-          <a href="https://www.worldmonitor.app/blog/" target="_blank" rel="noopener">Blog</a>
-          <a href="https://www.worldmonitor.app/docs/documentation" target="_blank" rel="noopener">Docs</a>
-          <a href="https://status.worldmonitor.app/" target="_blank" rel="noopener">Status</a>
-        </div>
+        <div class="mobile-menu-footer-links">${PAKISTAN_FOOTER_LINKS_HTML}</div>
         <div class="mobile-menu-version">v${__APP_VERSION__}</div>
       </nav>
       <div class="region-sheet-backdrop" id="regionSheetBackdrop"></div>
@@ -1240,6 +1169,7 @@ export class PanelLayoutManager implements AppModule {
         <div class="region-sheet-header">${t('header.selectRegion')}</div>
         <div class="region-sheet-divider"></div>
         ${[
+        { value: 'pakistan', label: 'Pakistan' },
         { value: 'global', label: t('components.deckgl.views.global') },
         { value: 'america', label: t('components.deckgl.views.americas') },
         { value: 'mena', label: t('components.deckgl.views.mena') },
@@ -1249,9 +1179,9 @@ export class PanelLayoutManager implements AppModule {
         { value: 'africa', label: t('components.deckgl.views.africa') },
         { value: 'oceania', label: t('components.deckgl.views.oceania') },
       ].map(r =>
-        `<button class="region-sheet-option ${r.value === 'global' ? 'active' : ''}" data-region="${r.value}">
+        `<button class="region-sheet-option ${r.value === 'pakistan' ? 'active' : ''}" data-region="${r.value}">
           <span>${r.label}</span>
-          <span class="region-sheet-check">${r.value === 'global' ? '✓' : ''}</span>
+          <span class="region-sheet-check">${r.value === 'pakistan' ? '✓' : ''}</span>
         </button>`
       ).join('')}
       </div>
@@ -1260,7 +1190,7 @@ export class PanelLayoutManager implements AppModule {
         <div class="map-section${mapStartsCollapsed ? ' collapsed' : ''}" id="mapSection">
           <div class="panel-header">
             <div class="panel-header-left">
-              <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : t('panels.map')}</span>
+              <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : 'Pakistan Situation'}</span>
             </div>
             <span class="header-clock" id="headerClock" translate="no"></span>
             <div class="map-header-actions">
@@ -1308,23 +1238,13 @@ export class PanelLayoutManager implements AppModule {
       </nav>
       <footer class="site-footer">
         <div class="site-footer-brand">
-          <img src="/favico/android-chrome-96x96.png" alt="" width="28" height="28" loading="lazy" decoding="async" class="site-footer-icon" />
           <div class="site-footer-brand-text">
-            <span class="site-footer-name">WORLD MONITOR</span>
-            <span class="site-footer-sub">v${__APP_VERSION__} &middot; <a href="https://x.com/eliehabib" target="_blank" rel="noopener" class="site-footer-credit">@eliehabib</a></span>
+            <span class="site-footer-name">PAKISTAN MONITOR</span>
+            <span class="site-footer-sub">v${__APP_VERSION__} &middot; built on World Monitor by Elie Habib</span>
           </div>
         </div>
-        <nav aria-label="World Monitor references">
-          ${referenceLinksHtml}
-          <a href="${referenceOrigin}/pro#pricing" target="_blank" rel="noopener">Pricing</a>
-          <a href="https://www.worldmonitor.app/blog/" target="_blank" rel="noopener">Blog</a>
-          <a href="https://www.worldmonitor.app/docs/documentation" target="_blank" rel="noopener">Docs</a>
-          <a href="https://status.worldmonitor.app/" target="_blank" rel="noopener">Status</a>
-          <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://x.com/worldmonitorai" target="_blank" rel="noopener">X</a>
-          ${this.ctx.isDesktopApp ? '' : `<span id="footerDownloadMount"></span>`}
-        </nav>
-        <span class="site-footer-copy">&copy; ${new Date().getFullYear()} World Monitor</span>
+        <nav aria-label="Pakistan Monitor references">${PAKISTAN_FOOTER_LINKS_HTML}</nav>
+        <span class="site-footer-copy">&copy; 2024-2026 Elie Habib &middot; free software under AGPL-3.0, without warranty</span>
       </footer>
     `, "legacy direct innerHTML migration"));
     // Mark AFTER the innerHTML swap so the timestamp reflects when the new shell
@@ -2707,6 +2627,20 @@ export class PanelLayoutManager implements AppModule {
     // Failed-fetch reload guard: src/main.ts:285-290 (installChunkReloadGuard).
     const mapModulePromise = import('@/components/MapContainer');
 
+    // Pakistan desk. The `pakistan` and `urdu` news panels come from the
+    // CANONICAL_FEEDS loop below; these panels read what those loaded.
+    const allNews = (): import('@/types').NewsItem[] => Object.values(this.ctx.newsByCategory).flat();
+    this.lazyImportedPanel('pk-brief', () => import('@/components/PakistanBriefPanel'), 'PakistanBriefPanel',
+      (PakistanBriefPanel) => new PakistanBriefPanel(() => this.ctx.newsByCategory['pakistan'] ?? []));
+    this.lazyDefaultPanel('pk-markets', () => import('@/components/PakistanMarketsPanel'), 'PakistanMarketsPanel');
+    this.lazyDefaultPanel('pk-air', () => import('@/components/PakistanAirPanel'), 'PakistanAirPanel');
+    this.lazyDefaultPanel('pk-weather', () => import('@/components/PakistanWeatherPanel'), 'PakistanWeatherPanel');
+    this.lazyDefaultPanel('pk-disasters', () => import('@/components/PakistanDisastersPanel'), 'PakistanDisastersPanel');
+    this.lazyImportedPanel('pk-incidents', () => import('@/components/PakistanIncidentsPanel'), 'PakistanIncidentsPanel',
+      (PakistanIncidentsPanel) => new PakistanIncidentsPanel(allNews, (lat, lon) => this.ctx.map?.setCenter(lat, lon, 8)));
+    this.lazyImportedPanel('pk-district', () => import('@/components/PakistanDistrictPanel'), 'PakistanDistrictPanel',
+      (PakistanDistrictPanel) => new PakistanDistrictPanel(allNews));
+
     this.createNewsPanel('politics', 'panels.politics');
     this.createNewsPanel('tech', 'panels.tech');
     this.createNewsPanel('finance', 'panels.finance');
@@ -3474,9 +3408,12 @@ export class PanelLayoutManager implements AppModule {
     if (this.ctx.isDestroyed) return;
     markLcpDebug('wm:map:container-construct');
     this.ctx.map = new MapContainer(mapContainer, {
-      zoom: this.ctx.isMobile ? 2.5 : 1.0,
-      pan: { x: 0, y: 0 },
-      view: this.ctx.isMobile ? this.ctx.resolvedLocation : 'global',
+      // Same zoom/pan as the 'pakistan' presets in DeckGLMap and Map.ts. deck.gl
+      // renders the preset but reports this zoom until the user moves the map,
+      // so a mismatch here gets written to the URL and re-applied on reload.
+      zoom: 4.5,
+      pan: { x: -170, y: 60 },
+      view: 'pakistan',
       layers: this.ctx.mapLayers,
       timeRange: '7d',
     }, preferGlobe, {

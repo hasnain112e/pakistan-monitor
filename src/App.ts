@@ -210,7 +210,7 @@ import { replaceRawI18nKeyPlaceholders } from '@/app/i18n-raw-key-healer';
 import { startAccountAuthHandoff } from '@/app/account-auth-handoff';
 import { TierPreferenceHandoff } from '@/app/tier-preference-handoff';
 import { initialRegionFromCache, resolveUserRegion, resolvePreciseUserCoordinates, type PreciseCoordinates } from '@/utils/user-location';
-import { showProBanner } from '@/components/ProBanner';
+import { resetMetaTags } from '@/services/meta-tags';
 import { getAuthState, initAuthState, subscribeAuthState } from '@/services/auth-state';
 import { installSignUpResume } from '@/services/sign-up-resume';
 import { createSignUpResumeOverlay } from '@/components/SignUpResumeOverlay';
@@ -2425,16 +2425,13 @@ export class App {
     // Localize the static index.html shell — <title>, meta description, and
     // the accessible <h1> are baked in English before the app boots; once i18n
     // is ready we swap them to the user's locale.
-    document.title = t('shell.documentTitle');
+    // Pakistan Monitor: the locale shell strings still name World Monitor, so the
+    // title and descriptions come from VARIANT_META instead of t('shell.*').
+    resetMetaTags();
     const setMeta = (sel: string, val: string) => {
       const el = document.querySelector(sel);
       if (el) el.setAttribute('content', val);
     };
-    setMeta('meta[name="description"]', t('shell.metaDescription'));
-    setMeta('meta[property="og:title"]', t('shell.documentTitle'));
-    setMeta('meta[property="og:description"]', t('shell.metaDescription'));
-    setMeta('meta[name="twitter:title"]', t('shell.documentTitle'));
-    setMeta('meta[name="twitter:description"]', t('shell.metaDescription'));
     // Mirror of OG_LOCALE in pro-test/src/i18n.ts. The two packages have
     // separate Vite roots and bundlers and can't share an import — keep the
     // tables aligned by hand when adding a locale here OR there.
@@ -2884,7 +2881,10 @@ export class App {
     await this.panelLayout.init();
     markLcpDebug('wm:layout:init-complete');
     this.eventHandlers.setupSearchControls();
-    showProBanner(this.state.container);
+    // No showProBanner(): the World Monitor Pro upsell does not apply to Pakistan
+    // Monitor. Release the slot the index.html pre-paint script reserved for it,
+    // as ProBanner does when it decides not to render.
+    document.documentElement.classList.remove('wm-pro-banner-reserved');
     this.updateConnectivityUi();
     window.addEventListener('online', this.handleConnectivityChange);
     window.addEventListener('offline', this.handleConnectivityChange);

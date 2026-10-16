@@ -2949,6 +2949,7 @@ export class GlobeMap {
   // ─── Camera / navigation ──────────────────────────────────────────────────
 
   private static readonly VIEW_POVS: Record<MapView, { lat: number; lng: number; altitude: number }> = {
+    pakistan: { lat: 30.4, lng: 69.3, altitude: 0.8 },
     global:   { lat: 20,  lng:  0,   altitude: 1.8 },
     america:  { lat: 20,  lng: -90,  altitude: 1.5 },
     mena:     { lat: 25,  lng:  40,  altitude: 1.2 },

@@ -48,6 +48,18 @@ const gnLocale = (q: string, hl: string, gl: string, ceid: string) =>
 
 export const VARIANT_FEEDS: Record<string, Record<string, ServerFeed[]>> = {
   full: {
+    // Mirrors FULL_FEEDS.pakistan in src/config/feeds.ts.
+    pakistan: [
+      { name: 'Dawn', url: 'https://www.dawn.com/feeds/home/' },
+      { name: 'Geo News', url: gn('site:geo.tv when:2d') },
+      { name: 'Express Tribune', url: 'https://tribune.com.pk/feed/home' },
+      { name: 'The News International', url: 'https://www.thenews.com.pk/rss/1/1' },
+      { name: 'Business Recorder', url: 'https://www.brecorder.com/feeds/latest-news' },
+      { name: 'ARY News', url: 'https://arynews.tv/feed/' },
+      { name: 'APP News', url: 'https://www.app.com.pk/feed/' },
+      { name: 'ProPakistani', url: 'https://propakistani.pk/feed/' },
+      { name: 'Daily Times', url: 'https://dailytimes.com.pk/feed/' },
+    ],
     politics: [
       { name: 'BBC World', url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
       { name: 'Guardian World', url: 'https://www.theguardian.com/world/rss' },
@@ -398,9 +410,6 @@ export const VARIANT_FEEDS: Record<string, Record<string, ServerFeed[]>> = {
       { name: 'Focus Taiwan', url: gn('site:focustaiwan.tw when:3d') },
       { name: 'Taipei Times', url: gn('site:taipeitimes.com when:3d') },
       { name: 'Taiwan News', url: gn('site:taiwannews.com.tw when:3d') },
-      // Pakistan (#5954)
-      { name: 'Dawn', url: 'https://www.dawn.com/feeds/home/' },
-      { name: 'Geo News', url: gn('site:geo.tv when:2d') },
       // SE Asia security (#5954)
       { name: 'Jakarta Post', url: gn('site:thejakartapost.com when:3d') },
       { name: 'Rappler', url: 'https://www.rappler.com/feed/' },

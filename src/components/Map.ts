@@ -93,7 +93,7 @@ import { resolveClusterGlContext } from './map-cluster-gl';
 
 
 export type TimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
-export type MapView = 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
+export type MapView = 'pakistan' | 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
 
 export interface MapState {
   zoom: number;
@@ -4296,6 +4296,7 @@ export class MapComponent {
     // Region-specific zoom and pan settings
     // Pan: +x = west, -x = east, +y = north, -y = south
     const viewSettings: Record<MapView, { zoom: number; pan: { x: number; y: number } }> = {
+      pakistan: { zoom: 4.5, pan: { x: -170, y: 60 } },
       global: { zoom: 1, pan: { x: 0, y: 0 } },
       america: { zoom: 1.8, pan: { x: 180, y: 30 } },
       mena: { zoom: 3.5, pan: { x: -100, y: 50 } },
