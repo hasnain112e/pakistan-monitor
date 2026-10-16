@@ -138,5 +138,26 @@ describe('districtHeadlines', () => {
   });
 });
 
+import { countByProvince, pakistanIncidents } from '../src/services/pk-incidents';
+
+describe('pakistanIncidents', () => {
+  const item = (title: string, link: string, category: string) => ({
+    source: 'Dawn', title, link, pubDate: new Date('2026-10-15T10:00:00Z'), isAlert: false,
+    threat: { level: 'high', category, confidence: 0.8, source: 'keyword' },
+  }) as import('../src/types').NewsItem;
+
+  it('keeps located incident categories once each and counts them by province', () => {
+    const incidents = pakistanIncidents([
+      item('Blast in Quetta kills five', 'a', 'terrorism'),
+      item('Blast in Quetta kills five', 'a', 'terrorism'),
+      item('Protest in Lahore over prices', 'b', 'protest'),
+      item('Cricket win in Lahore', 'c', 'general'),
+      item('Blast in Kabul', 'd', 'terrorism'),
+    ]);
+    assert.deepEqual(incidents.map((i) => i.item.link), ['a', 'b']);
+    assert.deepEqual(countByProvince(incidents), [['Balochistan', 1], ['Punjab', 1]]);
+  });
+});
+
 
 
