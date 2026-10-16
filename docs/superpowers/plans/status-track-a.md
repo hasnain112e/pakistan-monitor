@@ -7,7 +7,7 @@
 | A2: Pakistan gazetteer | DONE | 409994b | Gazetteer for English & Urdu geocoding |
 | A3: District boundaries & panel | DONE | 6f43617 | GeoJSON boundaries + district click |
 | A4: Incidents panel by province | DONE | 10a96c7 | Classified incidents grouped by province |
-| A5: Pakistan workspaces | DONE | [pending] | Mission presets for Pakistan desks |
+| A5: Pakistan workspaces | DONE | 8d32bfb | Mission presets for Pakistan desks |
 
 ## Needs from the other track
 
