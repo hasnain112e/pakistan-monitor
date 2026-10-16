@@ -230,6 +230,7 @@ const REGIONAL_ROLLOUT_DEFAULTS = [
   'The Astana Times',
   'Focus Taiwan',
   'Dawn',
+  'Geo News', // Pakistan Monitor default-enables Geo News in the Pakistan desk.
   'Rappler',
   'Hiiraan Online',
   'RFI Afrique',
@@ -259,7 +260,6 @@ const REGIONAL_ROLLOUT_OPT_INS = [
   'The Times of Central Asia',
   'Taipei Times',
   'Taiwan News',
-  'Geo News',
   'Jakarta Post',
   'The Star (Malaysia)',
   'Irrawaddy',

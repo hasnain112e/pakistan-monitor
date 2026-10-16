@@ -1,1 +1,10 @@
 /* Pakistan Monitor, Track B panels. Unlayered, like pakistan.css. */
+
+/* Urdu headlines read right-to-left. */
+.panel[data-panel="urdu"] .item-title {
+  direction: rtl;
+  unicode-bidi: plaintext;
+  text-align: right;
+  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'Segoe UI', sans-serif;
+  line-height: 1.9;
+}

@@ -78,6 +78,15 @@ export const FULL_FEEDS: Record<string, Feed[]> = {
     { name: 'ProPakistani', url: rss('https://propakistani.pk/feed/') },
     { name: 'Daily Times', url: rss('https://dailytimes.com.pk/feed/') },
   ],
+  // Urdu-language desk. No `lang` tag on purpose: tagged feeds are hidden from
+  // English-UI users by filterFeedsByLanguage.
+  urdu: [
+    { name: 'BBC Urdu', url: rss('https://feeds.bbci.co.uk/urdu/rss.xml') },
+    { name: 'Independent Urdu', url: rss('https://www.independenturdu.com/rss.xml') },
+    { name: 'Express Urdu', url: rss('https://www.express.pk/feed/') },
+    { name: 'Jang', url: rss('https://jang.com.pk/rss/1/1') },
+    { name: 'Dawn News Urdu', url: rss('https://www.dawnnews.tv/feeds/latest-news/') },
+  ],
   politics: [
     { name: 'BBC World', url: rss('https://feeds.bbci.co.uk/news/world/rss.xml') },
     { name: 'Guardian World', url: rss('https://www.theguardian.com/world/rss') },
@@ -1163,7 +1172,7 @@ export const SOURCE_REGION_MAP: Record<string, { labelKey: string; feedKeys: str
   middleeast: { labelKey: 'header.sourceRegionMiddleEast', feedKeys: ['middleeast'] },
   africa: { labelKey: 'header.sourceRegionAfrica', feedKeys: ['africa'] },
   latam: { labelKey: 'header.sourceRegionLatAm', feedKeys: ['latam'] },
-  asia: { labelKey: 'header.sourceRegionAsiaPacific', feedKeys: ['pakistan', 'asia'] },
+  asia: { labelKey: 'header.sourceRegionAsiaPacific', feedKeys: ['pakistan', 'urdu', 'asia'] },
   topical: { labelKey: 'header.sourceRegionTopical', feedKeys: ['energy', 'tech', 'ai', 'finance', 'layoffs', 'thinktanks'] },
   intel: { labelKey: 'header.sourceRegionIntel', feedKeys: [] },
 
@@ -1324,6 +1333,7 @@ const CENTRAL_ASIA_EN_DEFAULT_SOURCES = [
 const INDO_PACIFIC_EN_DEFAULT_SOURCES = [
   'Focus Taiwan',
   'Dawn',
+  'Geo News',
   'Rappler',
 ] as const;
 
@@ -1397,7 +1407,7 @@ export const REGIONAL_FEED_ROLLOUT_OPT_IN_SOURCES = [
   'JAMnews', 'Azertag', 'Armenpress', 'Zerkalo', 'NewsMaker', 'Ziarul de Gardă',
   'Radio Tamazuj', 'The Reporter Ethiopia', 'Actualite.cd', 'Radio Okapi',
   'MyJoyOnline', 'Le Quotidien', 'RFE/RL Central Asia', 'The Times of Central Asia',
-  'Taipei Times', 'Taiwan News', 'Geo News', 'Jakarta Post',
+  'Taipei Times', 'Taiwan News', 'Jakarta Post',
   'The Star (Malaysia)', 'Irrawaddy',
   'Ethiopia Insight', 'Dabanga Sudan', 'Citi Newsroom',
 ] as const;
@@ -1614,6 +1624,7 @@ export function getStrategicDefaultSources(): Set<string> {
  */
 export const DEFAULT_ENABLED_SOURCES: Record<string, string[]> = {
   pakistan: ['Dawn', 'Geo News', 'Express Tribune', 'The News International', 'Business Recorder', 'ARY News', 'APP News', 'ProPakistani', 'Daily Times'],
+  urdu: ['BBC Urdu', 'Independent Urdu', 'Express Urdu', 'Jang', 'Dawn News Urdu'],
   politics: ['BBC World', 'Guardian World', 'AP News', 'Reuters World', 'CNN World'],
   // Canada pack (#5960/#6604/#6605): CBC News + CTV News + Toronto Star
   // default-on for North America keyCountry CA (floors.CA = 3). Globe and Mail

@@ -60,6 +60,14 @@ export const VARIANT_FEEDS: Record<string, Record<string, ServerFeed[]>> = {
       { name: 'ProPakistani', url: 'https://propakistani.pk/feed/' },
       { name: 'Daily Times', url: 'https://dailytimes.com.pk/feed/' },
     ],
+    // Mirrors FULL_FEEDS.urdu in src/config/feeds.ts.
+    urdu: [
+      { name: 'BBC Urdu', url: 'https://feeds.bbci.co.uk/urdu/rss.xml' },
+      { name: 'Independent Urdu', url: 'https://www.independenturdu.com/rss.xml' },
+      { name: 'Express Urdu', url: 'https://www.express.pk/feed/' },
+      { name: 'Jang', url: 'https://jang.com.pk/rss/1/1' },
+      { name: 'Dawn News Urdu', url: 'https://www.dawnnews.tv/feeds/latest-news/' },
+    ],
     politics: [
       { name: 'BBC World', url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
       { name: 'Guardian World', url: 'https://www.theguardian.com/world/rss' },
