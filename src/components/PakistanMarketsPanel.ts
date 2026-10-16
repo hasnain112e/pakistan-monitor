@@ -10,6 +10,10 @@ const number = (value: number, digits: number): string =>
   value.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const signed = (value: number): string => `${value >= 0 ? '+' : ''}${number(value, 2)}`;
 
+const INDEX_NAMES: Record<string, string> = {
+  KSE30: 'KSE-30', ALLSHR: 'All Share', KMI30: 'KMI-30 (Shariah)', BKTI: 'Banks', OGTI: 'Oil & Gas',
+};
+
 export class PakistanMarketsPanel extends Panel {
   private readonly loop: SmartPollLoopHandle;
   private kse: Kse100Quote | null = null;
@@ -50,10 +54,18 @@ export class PakistanMarketsPanel extends Panel {
     const q = this.kse;
     if (!q) return safeHtml`<div class="pk-stat"><div class="pk-stat-label">KSE-100</div><div class="pk-note pk-warn">Unavailable: ${this.kseError ?? 'no data'}</div></div>`;
     const source = q.asOf ? `PSX · as of ${q.asOf} PKT` : `PSX · fetched ${formatTime(q.fetchedAt)}`;
+    const others = (q.indices ?? []).filter((i) => i.code !== 'KSE100');
+    const table = others.length
+      ? safeHtml`<div class="pk-index-table">${joinSafeHtml(others.map((i) => safeHtml`<div class="pk-index-row">
+          <span>${INDEX_NAMES[i.code] ?? i.code}</span><span>${number(i.value, 0)}</span>
+          <span class="${i.change < 0 ? 'pk-down' : 'pk-up'}">${signed(i.changePct)}%</span>
+        </div>`))}</div>`
+      : '';
     return safeHtml`<div class="pk-stat">
       <div class="pk-stat-label">KSE-100 ${q.stale ? safeHtml`<span class="pk-badge pk-badge-warn" title="PSX unreachable; last good quote">stale</span>` : ''}</div>
       <div class="pk-stat-value">${number(q.value, 2)}</div>
       <div class="pk-stat-change ${q.change < 0 ? 'pk-down' : 'pk-up'}">${signed(q.change)} (${signed(q.changePct)}%)</div>
+      ${table}
       <div class="pk-note">${source}</div>
       ${this.kseError ? safeHtml`<div class="pk-note pk-warn">Refresh failed: ${this.kseError}</div>` : ''}
     </div>`;

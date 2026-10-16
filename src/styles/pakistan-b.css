@@ -20,3 +20,8 @@
 .pk-alert-orange { color: var(--semantic-high); }
 .pk-alert-green { color: var(--semantic-positive); }
 
+.pk-index-table { display: grid; gap: 2px; margin: 6px 0; }
+.pk-index-row { display: grid; grid-template-columns: 1fr auto 64px; gap: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.pk-index-row span:last-child { text-align: right; }
+
+

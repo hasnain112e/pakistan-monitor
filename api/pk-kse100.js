@@ -13,16 +13,29 @@ const LAST_GOOD_TTL_SECONDS = 7 * 86400;
 // ponytail: per-isolate memory; Upstash, when configured, is the durable copy.
 let lastGood = null;
 
-/** KSE-100 row of the indices table. Columns: High, Low, Current, Change, % Change. */
-export function parseKse100(html) {
-  const start = html.indexOf('data-code="KSE100"');
+// Indices the markets panel shows, in order. One /indices fetch serves them all.
+export const PSX_INDEX_CODES = ['KSE100', 'KSE30', 'ALLSHR', 'KMI30', 'BKTI', 'OGTI'];
+
+/** One row of the indices table. Columns: High, Low, Current, Change, % Change. */
+export function parseIndex(html, code) {
+  const start = html.indexOf(`data-code="${code}"`);
   const end = start === -1 ? -1 : html.indexOf('</tr>', start);
   if (end === -1) return null;
   const nums = [...html.slice(start, end).matchAll(/data-order="(-?\d+(?:\.\d+)?)"/g)].map((m) => Number(m[1]));
   if (nums.length < 5 || !(nums[2] > 0)) return null;
   const [high, low, value, change, changePct] = nums;
-  const asOf = html.match(/As of\s+([^<]+)</)?.[1].replace(/\s+/g, ' ').trim() ?? null;
-  return { value, change, changePct, high, low, asOf };
+  return { code, value, change, changePct, high, low };
+}
+
+export function parseAsOf(html) {
+  return html.match(/As of\s+([^<]+)</)?.[1].replace(/\s+/g, ' ').trim() ?? null;
+}
+
+/** KSE-100 row, in the response shape the panel has always read. */
+export function parseKse100(html) {
+  const row = parseIndex(html, 'KSE100');
+  if (!row) return null;
+  return { value: row.value, change: row.change, changePct: row.changePct, high: row.high, low: row.low, asOf: parseAsOf(html) };
 }
 
 export default async function handler(req) {
@@ -38,7 +51,10 @@ export default async function handler(req) {
     if (html.length > 2_000_000) throw new Error('PSX page exceeds size limit');
     const quote = parseKse100(html);
     if (!quote) throw new Error('KSE-100 row not found on the PSX page');
-    lastGood = { ...quote, fetchedAt: new Date().toISOString() };
+    const indices = PSX_INDEX_CODES.map((code) => parseIndex(html, code))
+      .filter(Boolean)
+      .map(({ code, value, change, changePct }) => ({ code, value, change, changePct }));
+    lastGood = { ...quote, indices, fetchedAt: new Date().toISOString() };
     try { await setCachedData(LAST_GOOD_KEY, lastGood, LAST_GOOD_TTL_SECONDS); } catch { /* best-effort */ }
     return jsonResponse({ ...lastGood, stale: false }, 200, { ...cors, 'Cache-Control': 'public, max-age=60, s-maxage=60' });
   } catch (error) {

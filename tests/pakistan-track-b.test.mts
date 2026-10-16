@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { parseKse100 } from '../api/pk-kse100.js';
+import { parseIndex, parseKse100 } from '../api/pk-kse100.js';
 
 // Trimmed from https://dps.psx.com.pk/indices (2026-10-13). Column order:
 // Index, High, Low, Current, Change, % Change.
@@ -32,6 +32,14 @@ describe('parseKse100', () => {
   it('returns null when the markup no longer has five numeric columns', () => {
     assert.equal(parseKse100(page('<tr><td data-code="KSE100">KSE100</td><td data-order="1">1</td></tr>')), null);
     assert.equal(parseKse100('<html>maintenance</html>'), null);
+  });
+});
+
+describe('parseIndex', () => {
+  const KSE30_ROW = '<tr><td><a data-code="KSE30"><b>KSE30</b></a></td><td data-order="50100.5"></td><td data-order="49800"></td><td data-order="49950.25"></td><td data-order="-75.5"></td><td data-order="-0.15"></td></tr>';
+  it('reads any index by its exact code', () => {
+    assert.deepEqual(parseIndex(page(KSE100_ROW + KSE30_ROW), 'KSE30'), { code: 'KSE30', value: 49950.25, change: -75.5, changePct: -0.15, high: 50100.5, low: 49800 });
+    assert.equal(parseIndex(page(KSE100_ROW), 'KMI30'), null);
   });
 });
 
