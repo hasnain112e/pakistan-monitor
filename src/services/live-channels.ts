@@ -19,15 +19,14 @@ export interface BuiltinLiveChannel extends LiveChannel {
   id: LiveNewsSlotId;
 }
 
-// Full variant: World news channels (24/7 live streams)
+// Pakistan Monitor: Pakistani news channels first, one international channel for context.
 const FULL_LIVE_CHANNELS: BuiltinLiveChannel[] = [
-  { id: 'bloomberg', name: 'Bloomberg', handle: '@markets' },
-  { id: 'sky', name: 'SkyNews', handle: '@SkyNews' },
-  { id: 'euronews', name: 'Euronews', handle: '@euronews' },
-  { id: 'dw', name: 'DW', handle: '@DWNews' },
-  { id: 'cnn', name: 'CNN', handle: '@CNN' },
-  { id: 'france24', name: 'France 24', handle: '@FRANCE24' },
-  { id: 'alarabiya', name: 'AlArabiya', handle: '@AlArabiya' },
+  { id: 'geo-news', name: 'Geo News', handle: '@geonews' },
+  { id: 'ary-news', name: 'ARY News' },
+  { id: 'dunya-news', name: 'Dunya News', handle: '@DunyaNewsOfficial' },
+  { id: 'samaa-tv', name: 'SAMAA TV', handle: '@SAMAATV' },
+  { id: 'ptv-news', name: 'PTV News', handle: '@PTVNewsOfficial' },
+  { id: 'bol-news', name: 'BOL News', handle: '@BOLNewsOfficial' },
   { id: 'aljazeera', name: 'AlJazeera', handle: '@AlJazeeraEnglish' },
 ];
 
@@ -87,6 +86,13 @@ export const OPTIONAL_LIVE_CHANNELS: BuiltinLiveChannel[] = [
   { id: 'dw-espanol', name: 'DW Español' },
   { id: 'rt-espanol', name: 'RT Español' },
   { id: 'cgtn-espanol', name: 'CGTN Español' },
+  // Pakistan
+  { id: 'geo-news', name: 'Geo News', handle: '@geonews' },
+  { id: 'ary-news', name: 'ARY News' },
+  { id: 'dunya-news', name: 'Dunya News', handle: '@DunyaNewsOfficial' },
+  { id: 'samaa-tv', name: 'SAMAA TV', handle: '@SAMAATV' },
+  { id: 'ptv-news', name: 'PTV News', handle: '@PTVNewsOfficial' },
+  { id: 'bol-news', name: 'BOL News', handle: '@BOLNewsOfficial' },
   // Asia
   { id: 'tbs-news', name: 'TBS NEWS DIG', handle: '@tbsnewsdig' },
   { id: 'ann-news', name: 'ANN News', handle: '@ANNnewsCH' },
@@ -146,7 +152,7 @@ const _REGION_ENTRIES: { key: string; labelKey: string; channelIds: string[] }[]
   { key: 'na', labelKey: 'components.liveNews.regionNorthAmerica', channelIds: ['bloomberg', 'yahoo', 'cnn', 'fox-news', 'newsmax', 'abc-news', 'cbs-news', 'nbc-news', 'cbc-news', 'ctv-news', 'reuters-tv', 'nasa'] },
   { key: 'eu', labelKey: 'components.liveNews.regionEurope', channelIds: ['sky', 'euronews', 'dw', 'france24', 'bbc-news', 'gb-news', 'the-guardian', 'france24-en', 'phoenix', 'rtp3', 'welt', 'rtve', 'trt-haber', 'ntv-turkey', 'cnn-turk', 'tv-rain', 'rt', 'tvp-info', 'telewizja-republika', 'tagesschau24', 'euronews-fr', 'euronews-gr', 'skai-tv', 'ert-news', 'france24-fr', 'france-info', 'bfmtv', 'tv5monde-info', 'nrk1'] },
   { key: 'latam', labelKey: 'components.liveNews.regionLatinAmerica', channelIds: ['cnn-brasil', 'jovem-pan', 'record-news', 'band-jornalismo', 'tn-argentina', 'c5n', 'milenio', 'noticias-caracol', 'ntn24', 't13', 'dw-espanol', 'rt-espanol', 'cgtn-espanol'] },
-  { key: 'asia', labelKey: 'components.liveNews.regionAsia', channelIds: ['tbs-news', 'ann-news', 'ntv-news', 'cti-news', 'cgtn', 'wion', 'ndtv', 'cna-asia', 'nhk-world', 'arirang-news', 'india-today', 'abp-news'] },
+  { key: 'asia', labelKey: 'components.liveNews.regionAsia', channelIds: ['geo-news', 'ary-news', 'dunya-news', 'samaa-tv', 'ptv-news', 'bol-news', 'tbs-news', 'ann-news', 'ntv-news', 'cti-news', 'cgtn', 'wion', 'ndtv', 'cna-asia', 'nhk-world', 'arirang-news', 'india-today', 'abp-news'] },
   { key: 'me', labelKey: 'components.liveNews.regionMiddleEast', channelIds: ['alarabiya', 'aljazeera', 'al-hadath', 'sky-news-arabia', 'trt-world', 'iran-intl', 'press-tv', 'cgtn-arabic', 'kan-11', 'i24-news', 'asharq-news', 'aljazeera-arabic', 'aljazeera-mubasher', 'alarabiya-business', 'al-qahera-news', 'dw-arabic', 'rt-arabic', 'rudaw'] },
   { key: 'africa', labelKey: 'components.liveNews.regionAfrica', channelIds: ['africanews', 'channels-tv', 'ktn-news', 'enca', 'sabc-news', 'arise-news'] },
   { key: 'oc', labelKey: 'components.liveNews.regionOceania', channelIds: ['abc-news-au'] },

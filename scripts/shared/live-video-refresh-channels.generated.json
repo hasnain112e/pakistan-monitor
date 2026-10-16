@@ -168,6 +168,42 @@
       "slots": [
         "live-news/bfmtv"
       ]
+    },
+    {
+      "channelId": "UC_vt34wimdCzdkrzVejwX9g",
+      "slots": [
+        "live-news/geo-news"
+      ]
+    },
+    {
+      "channelId": "UCMmpLL2ucRHAXbNHiCPyIyg",
+      "slots": [
+        "live-news/ary-news"
+      ]
+    },
+    {
+      "channelId": "UCnMBV5Iw4WqKILKue1nP6Hg",
+      "slots": [
+        "live-news/dunya-news"
+      ]
+    },
+    {
+      "channelId": "UCJekW1Vj5fCVEGdye_mBN6Q",
+      "slots": [
+        "live-news/samaa-tv"
+      ]
+    },
+    {
+      "channelId": "UC5RvV_LtR1dxPCVFGw6dxXA",
+      "slots": [
+        "live-news/ptv-news"
+      ]
+    },
+    {
+      "channelId": "UCz2yxQJZgiB_5elTzqV7FiQ",
+      "slots": [
+        "live-news/bol-news"
+      ]
     }
   ]
 }

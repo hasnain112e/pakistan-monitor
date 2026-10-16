@@ -301,6 +301,13 @@ export const LIVE_NEWS_SOURCES = {
     'https://abc-iview-mediapackagestreams-2.akamaized.net/out/v1/6e1cc6d25ec0480ea099a5399d73bc4b/index.m3u8',
     'https://www.youtube.com/watch?v=vOTiJkg1voo',
   ],
+  // Pakistan (2026-10-16). Channel entries: they play whatever the channel has live.
+  'geo-news': ['https://www.youtube.com/channel/UC_vt34wimdCzdkrzVejwX9g'],
+  'ary-news': ['https://www.youtube.com/channel/UCMmpLL2ucRHAXbNHiCPyIyg'],
+  'dunya-news': ['https://www.youtube.com/channel/UCnMBV5Iw4WqKILKue1nP6Hg'],
+  'samaa-tv': ['https://www.youtube.com/channel/UCJekW1Vj5fCVEGdye_mBN6Q'],
+  'ptv-news': ['https://www.youtube.com/channel/UC5RvV_LtR1dxPCVFGw6dxXA'],
+  'bol-news': ['https://www.youtube.com/channel/UCz2yxQJZgiB_5elTzqV7FiQ'],
 } as const satisfies Record<string, readonly string[]>;
 
 export type LiveNewsSlotId = keyof typeof LIVE_NEWS_SOURCES;
