@@ -3,6 +3,7 @@ import { SITE_VARIANT } from '@/config';
 import { chunkArray, fetchWithProxy, hasNoStoreCacheDirective, isMobileDevice } from '@/utils';
 import { classifyByKeyword, classifyWithAI } from './threat-classifier';
 import { inferGeoHubsFromTitle } from './geo-hub-index';
+import { locatePakistan, PAKISTANI_SOURCE_NAMES } from './pk-gazetteer';
 import { getPersistentCache, setPersistentCache } from './persistent-cache';
 import { dataFreshness } from './data-freshness';
 import { ingestHeadlines } from './trending-keywords';
@@ -342,6 +343,7 @@ export async function fetchFeed(feed: Feed, options: FetchFeedOptions = {}): Pro
       const isAlert = threat.level === 'critical' || threat.level === 'high';
       const geoMatches = inferGeoHubsFromTitle(title);
       const topGeo = geoMatches[0];
+      const pkPlace = locatePakistan(title, { pakistaniSource: PAKISTANI_SOURCE_NAMES.has(feed.name) });
 
       parsed.push({
         source: feed.name,
@@ -351,7 +353,9 @@ export async function fetchFeed(feed: Feed, options: FetchFeedOptions = {}): Pro
         pubDateMissing,
         isAlert,
         threat,
-        ...(topGeo && { lat: topGeo.hub.lat, lon: topGeo.hub.lon, locationName: topGeo.hub.name }),
+        ...(pkPlace
+          ? { lat: pkPlace.lat, lon: pkPlace.lon, locationName: pkPlace.name }
+          : topGeo && { lat: topGeo.hub.lat, lon: topGeo.hub.lon, locationName: topGeo.hub.name }),
         lang: feed.lang,
         ...(SITE_VARIANT === 'happy' && { imageUrl: extractImageUrl(item) }),
       });

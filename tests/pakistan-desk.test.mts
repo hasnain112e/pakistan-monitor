@@ -94,3 +94,31 @@ describe('eonetToMapEvents', () => {
   });
 });
 
+import { findDistrict, locatePakistan } from '../src/services/pk-gazetteer';
+
+describe('locatePakistan', () => {
+  it('finds English and Urdu place names', () => {
+    assert.equal(locatePakistan('Blast in Quetta kills five')?.name, 'Quetta');
+    assert.equal(locatePakistan('کراچی میں موسلا دھار بارش')?.name, 'Karachi');
+  });
+
+  it('reads "Khyber Pakhtunkhwa" as the province, not Khyber district', () => {
+    assert.equal(locatePakistan('Khyber Pakhtunkhwa cabinet approves budget')?.kind, 'province');
+  });
+
+  it('needs Pakistani context for ambiguous names', () => {
+    assert.equal(locatePakistan('SWAT team storms a building in Texas'), null);
+    assert.equal(locatePakistan('Hyderabad startup raises funds'), null);
+    assert.equal(locatePakistan('Floods hit Swat valley', { pakistaniSource: true })?.kind, 'district');
+  });
+
+  it('does not read the Urdu word for "late" as a place', () => {
+    assert.equal(locatePakistan('پروازیں دیر سے روانہ ہوئیں'), null);
+  });
+
+  it('finds districts by geoBoundaries spelling', () => {
+    assert.equal(findDistrict('Quetta')?.province, 'Balochistan');
+  });
+});
+
+

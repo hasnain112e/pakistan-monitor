@@ -1,6 +1,7 @@
 import type { NewsItem, ThreatLevel as ClientThreatLevel } from '@/types';
 import type { NewsItem as ProtoNewsItem } from '@/generated/client/worldmonitor/news/v1/service_client';
 import { protoThreatLevelToLabel } from '../../shared/news-clustering-core.js';
+import { locatePakistan, PAKISTANI_SOURCE_NAMES } from '@/services/pk-gazetteer';
 
 const PROTO_TO_CLIENT_PHASE: Record<string, import('@/types').StoryPhase> = {
   STORY_PHASE_BREAKING:   'breaking',
@@ -11,6 +12,7 @@ const PROTO_TO_CLIENT_PHASE: Record<string, import('@/types').StoryPhase> = {
 
 export function protoItemToNewsItem(p: ProtoNewsItem): NewsItem {
   const level: ClientThreatLevel = protoThreatLevelToLabel(p.threat?.level);
+  const place = p.location ? null : locatePakistan(p.title, { pakistaniSource: PAKISTANI_SOURCE_NAMES.has(p.source) });
   return {
     source: p.source,
     title: p.title,
@@ -33,7 +35,9 @@ export function protoItemToNewsItem(p: ProtoNewsItem): NewsItem {
       source: (p.threat.source || 'keyword') as 'keyword' | 'ml' | 'llm',
     } : undefined,
     ...(p.locationName && { locationName: p.locationName }),
-    ...(p.location && { lat: p.location.latitude, lon: p.location.longitude }),
+    ...(p.location
+      ? { lat: p.location.latitude, lon: p.location.longitude }
+      : place && { lat: place.lat, lon: place.lon, locationName: place.name }),
     ...(p.importanceScore ? { importanceScore: p.importanceScore } : {}),
     ...(Number.isFinite(p.credibilityScore) ? { credibilityScore: p.credibilityScore } : {}),
     ...(p.corroborationCount ? { corroborationCount: p.corroborationCount } : {}),
