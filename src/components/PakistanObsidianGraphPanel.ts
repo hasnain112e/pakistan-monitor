@@ -1,5 +1,6 @@
 import { Panel } from './Panel';
-import { safeHtml } from '@/utils/sanitize';
+import { safeHtml, escapeHtml } from '@/utils/sanitize';
+import { setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
 import {
   buildObsidianGraph,
   generateObsidianVaultMarkdown,
@@ -71,6 +72,14 @@ export class PakistanObsidianGraphPanel extends Panel {
       this.ctx2d = this.canvas.getContext('2d');
       this.setupCanvasEvents();
       this.resizeCanvas();
+
+      const parent = this.canvas.parentElement;
+      if (parent && typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => {
+          this.resizeCanvas();
+        });
+        ro.observe(parent);
+      }
     }
 
     // Export vault listener
@@ -109,13 +118,17 @@ export class PakistanObsidianGraphPanel extends Panel {
     this.graph = buildObsidianGraph(items);
     this.setCount(this.graph.nodes.length);
 
-    // Initial positioning
-    const w = this.canvas?.clientWidth ?? 350;
-    const h = this.canvas?.clientHeight ?? 250;
-    for (const node of this.graph.nodes) {
-      if (node.x == null) {
-        node.x = w / 2 + (Math.random() - 0.5) * (w * 0.7);
-        node.y = h / 2 + (Math.random() - 0.5) * (h * 0.7);
+    // Initial positioning in an orbital constellation
+    const w = Math.max(this.canvas?.clientWidth || 0, 360);
+    const h = Math.max(this.canvas?.clientHeight || 0, 240);
+    const total = this.graph.nodes.length;
+    for (let i = 0; i < total; i++) {
+      const node = this.graph.nodes[i];
+      if (node && node.x == null) {
+        const angle = (i / Math.max(total, 1)) * Math.PI * 2;
+        const radius = Math.min(w, h) * 0.32 + ((i % 3) - 1) * 20;
+        node.x = w / 2 + Math.cos(angle) * radius;
+        node.y = h / 2 + Math.sin(angle) * radius;
         node.vx = 0;
         node.vy = 0;
       }
@@ -207,19 +220,19 @@ export class PakistanObsidianGraphPanel extends Panel {
     const typeTag = `#${node.type}`;
     const provTag = node.province ? ` · [[${node.province}]]` : '';
 
-    el.innerHTML = `
+    setTrustedHtml(el, trustedHtml(`
       <div class="obsidian-callout callout-critical">
         <div class="callout-title">
           <span class="callout-icon">◆</span>
-          <b>${node.label}</b>
-          <span class="obsidian-tag">${typeTag}</span>
-          ${node.lat ? `<button type="button" class="pk-map-btn" style="margin-left:auto;">Fly to map</button>` : ''}
+          <b>${escapeHtml(node.label)}</b>
+          <span class="obsidian-tag">${escapeHtml(typeTag)}</span>
+          ${node.lat ? '<button type="button" class="pk-map-btn" style="margin-left:auto;">Fly to map</button>' : ''}
         </div>
         <div class="callout-body">
-          Linked entities: ${node.linkCount ?? 0} connections${provTag}
+          Linked entities: ${Number(node.linkCount ?? 0)} connections${escapeHtml(provTag)}
         </div>
       </div>
-    `;
+    `, 'Obsidian inspector card'));
 
     el.querySelector('.pk-map-btn')?.addEventListener('click', () => {
       if (node.lat != null && node.lon != null) this.focusMap(node.lat, node.lon);
@@ -229,9 +242,11 @@ export class PakistanObsidianGraphPanel extends Panel {
   private resizeCanvas(): void {
     if (!this.canvas) return;
     const parent = this.canvas.parentElement;
-    if (parent) {
-      this.canvas.width = parent.clientWidth;
-      this.canvas.height = Math.max(parent.clientHeight, 220);
+    const w = Math.max(parent?.clientWidth || 0, 360);
+    const h = Math.max(parent?.clientHeight || 0, 220);
+    if (this.canvas.width !== w || this.canvas.height !== h) {
+      this.canvas.width = w;
+      this.canvas.height = h;
     }
   }
 
