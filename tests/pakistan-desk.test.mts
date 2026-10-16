@@ -58,3 +58,39 @@ describe('pkrRates', () => {
     assert.equal(pkrRates({ PKR: 0 }), null);
   });
 });
+
+import { eonetToMapEvents, usgsRegionUrl, usgsToEarthquakes } from '../src/services/pk-public-sources';
+
+describe('usgsToEarthquakes', () => {
+  it('maps GeoJSON features and skips malformed ones', () => {
+    const quakes = usgsToEarthquakes({ features: [
+      { id: 'us7000abcd', properties: { mag: 4.8, place: '45 km SW of Quetta, Pakistan', time: 1792000000000, url: 'https://earthquake.usgs.gov/earthquakes/eventpage/us7000abcd' }, geometry: { coordinates: [66.7, 29.9, 10] } },
+      { id: 'no-magnitude', properties: { mag: null }, geometry: { coordinates: [66, 29, 5] } },
+    ] });
+    assert.equal(quakes.length, 1);
+    assert.deepEqual(quakes[0]?.location, { latitude: 29.9, longitude: 66.7 });
+    assert.equal(quakes[0]?.depthKm, 10);
+    assert.equal(quakes[0]?.source, 'usgs');
+  });
+
+  it('asks for the last N days around Pakistan', () => {
+    const url = new URL(usgsRegionUrl(7, 2.5, Date.parse('2026-10-16T00:00:00Z')));
+    assert.equal(url.searchParams.get('starttime'), '2026-10-09');
+    assert.equal(url.searchParams.get('minlatitude'), '20');
+    assert.equal(url.searchParams.get('maxlongitude'), '82');
+  });
+});
+
+describe('eonetToMapEvents', () => {
+  it('keeps point events with their latest position and skips polygons', () => {
+    const events = eonetToMapEvents({ events: [
+      { id: 'EONET_1', title: 'Wildfire near Quetta', categories: [{ id: 'wildfires', title: 'Wildfires' }], sources: [{ url: 'https://example.org/1' }],
+        geometry: [{ date: '2026-10-14T00:00:00Z', coordinates: [66.9, 30.1] }, { date: '2026-10-15T00:00:00Z', coordinates: [67.0, 30.2] }] },
+      { id: 'EONET_2', title: 'Ice', categories: [{ id: 'seaLakeIce', title: 'Sea and Lake Ice' }], geometry: [{ date: '2026-10-15T00:00:00Z', coordinates: [[[1, 2], [3, 4]]] }] },
+    ] });
+    assert.equal(events.length, 1);
+    assert.deepEqual([events[0]?.lat, events[0]?.lon, events[0]?.category], [30.2, 67.0, 'wildfires']);
+    assert.equal(events[0]?.date, Date.parse('2026-10-15T00:00:00Z'));
+  });
+});
+

@@ -5,6 +5,7 @@ import type { ListNaturalEventsResponse } from '@/generated/client/worldmonitor/
 import { createCircuitBreaker } from '@/utils/circuit-breaker';
 import { getHydratedData } from '@/services/bootstrap';
 import { NaturalServiceClient } from '@/services/generated-rpc-clients';
+import { eonetRegionUrl, eonetToMapEvents } from '@/services/pk-public-sources';
 
 const CATEGORY_ICONS: Record<NaturalEventCategory, string> = {
   severeStorms: '🌀',
@@ -91,5 +92,13 @@ export async function fetchNaturalEvents(_days = 30): Promise<NaturalEvent[]> {
     return client.listNaturalEvents({ days: 30 });
   }, emptyFallback, { shouldCache: (r) => r.events.length > 0 });
 
-  return (response.events || []).map(toNaturalEvent);
+  if (response.events?.length) return response.events.map(toNaturalEvent);
+  // Pakistan Monitor: no Redis seed behind the RPC, so read NASA EONET directly.
+  try {
+    const res = await fetch(eonetRegionUrl(), { credentials: 'omit' });
+    return res.ok ? eonetToMapEvents(await res.json()).map(toNaturalEvent) : [];
+  } catch {
+    return [];
+  }
 }
+
