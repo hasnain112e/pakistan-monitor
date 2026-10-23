@@ -33,6 +33,8 @@ const FULL_PANELS: Record<string, PanelConfig> = {
   'pk-disasters': { name: 'Disasters', enabled: true, priority: 1 },
   'pk-district': { name: 'District', enabled: true, priority: 1 },
   'pk-graph': { name: 'Obsidian Intel Graph', enabled: true, priority: 1 },
+  'me-war-room': { name: 'Middle East War Room', enabled: true, priority: 1 },
+  'pk-strategic': { name: 'Strategic Corridors & Fuel', enabled: true, priority: 1 },
   'live-news': { name: 'Live News', enabled: true, priority: 1 },
   'live-webcams': { name: 'Live Webcams', enabled: false, priority: 1 },
   'windy-webcams': { name: 'Windy Live Webcam', enabled: false, priority: 2 },
@@ -146,7 +148,7 @@ const FULL_PANELS: Record<string, PanelConfig> = {
 
 export const PAKISTAN_DEFAULT_ON = new Set([
   'map', 'pakistan', 'urdu', 'pk-brief', 'pk-incidents', 'pk-markets', 'pk-air',
-  'pk-weather', 'pk-disasters', 'pk-district', 'pk-graph', 'live-news',
+  'pk-weather', 'pk-disasters', 'pk-district', 'pk-graph', 'me-war-room', 'pk-strategic', 'live-news',
   'politics', 'asia', 'middleeast', 'energy', 'monitors',
 ]);
 
@@ -1518,7 +1520,7 @@ export const PANEL_CATEGORY_MAP: Record<string, { labelKey: string; panelKeys: s
   // Pakistan Desk
   pakistanDesk: {
     labelKey: 'header.panelCatPakistan',
-    panelKeys: ['pakistan', 'urdu', 'pk-brief', 'pk-incidents', 'pk-markets', 'pk-air', 'pk-weather', 'pk-disasters', 'pk-district', 'pk-graph'],
+    panelKeys: ['pakistan', 'urdu', 'pk-brief', 'pk-incidents', 'pk-markets', 'pk-air', 'pk-weather', 'pk-disasters', 'pk-district', 'pk-graph', 'me-war-room', 'pk-strategic'],
     variants: ['full'],
   },
 

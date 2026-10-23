@@ -2642,6 +2642,13 @@ export class PanelLayoutManager implements AppModule {
       (PakistanDistrictPanel) => new PakistanDistrictPanel(allNews));
     this.lazyImportedPanel('pk-graph', () => import('@/components/PakistanObsidianGraphPanel'), 'PakistanObsidianGraphPanel',
       (PakistanObsidianGraphPanel) => new PakistanObsidianGraphPanel(allNews, (lat, lon) => this.ctx.map?.setCenter(lat, lon, 8)));
+    this.lazyImportedPanel('me-war-room', () => import('@/components/MiddleEastWarPanel'), 'MiddleEastWarPanel',
+      (MiddleEastWarPanel) => new MiddleEastWarPanel(
+        () => [...(this.ctx.newsByCategory['middleeast'] ?? []), ...allNews()],
+        (lat, lon) => this.ctx.map?.setCenter(lat, lon, 6)
+      ));
+    this.lazyImportedPanel('pk-strategic', () => import('@/components/PakistanStrategicPanel'), 'PakistanStrategicPanel',
+      (PakistanStrategicPanel) => new PakistanStrategicPanel((lat, lon) => this.ctx.map?.setCenter(lat, lon, 7)));
 
     this.createNewsPanel('politics', 'panels.politics');
     this.createNewsPanel('tech', 'panels.tech');

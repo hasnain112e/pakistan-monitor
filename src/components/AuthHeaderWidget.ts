@@ -2,6 +2,7 @@ import { subscribeAuthState, type AuthSession } from '@/services/auth-state';
 import { mountUserButton, openSignIn, openSignUp } from '@/services/clerk';
 import { t } from '@/services/i18n';
 import { setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
+import { isProSubscriber, openProIntelligenceModal } from './ProIntelligenceModal';
 
 export class AuthHeaderWidget {
   private container: HTMLElement;
@@ -10,6 +11,10 @@ export class AuthHeaderWidget {
   private onSignInClick?: () => void;
   private onSettingsClick?: () => void;
   private onBillingClick?: () => void;
+  private onProStatusChange = () => {
+    // Re-render when PRO status changes
+    this.render({ isPending: false, user: null, org: null });
+  };
 
   constructor(
     onSignInClick?: () => void,
@@ -21,6 +26,8 @@ export class AuthHeaderWidget {
     this.onBillingClick = onBillingClick;
     this.container = document.createElement('div');
     this.container.className = 'auth-header-widget';
+
+    window.addEventListener('pk-pro-status-changed', this.onProStatusChange);
 
     this.unsubscribeAuth = subscribeAuthState((state: AuthSession) => {
       if (state.isPending) {
@@ -36,12 +43,26 @@ export class AuthHeaderWidget {
   }
 
   public destroy(): void {
+    window.removeEventListener('pk-pro-status-changed', this.onProStatusChange);
     this.unmountUserButton?.();
     this.unmountUserButton = null;
     if (this.unsubscribeAuth) {
       this.unsubscribeAuth();
       this.unsubscribeAuth = null;
     }
+  }
+
+  private renderProButton(): void {
+    const isPro = isProSubscriber();
+    const proBtn = document.createElement('button');
+    proBtn.type = 'button';
+    proBtn.className = isPro ? 'auth-pro-pass-btn auth-pro-active' : 'auth-pro-pass-btn';
+    proBtn.innerHTML = isPro
+      ? '<span class="pk-pro-pulse"></span>★ PRO ACTIVE'
+      : '⚡ PRO INTEL PASS';
+    proBtn.title = 'Open Pakistan Monitor PRO Intelligence Suite';
+    proBtn.addEventListener('click', () => openProIntelligenceModal());
+    this.container.appendChild(proBtn);
   }
 
   private render(state: AuthSession): void {
@@ -77,6 +98,8 @@ export class AuthHeaderWidget {
   }
 
   private renderSignedOut(): void {
+    this.renderProButton();
+
     const signInBtn = document.createElement('button');
     signInBtn.className = 'auth-signin-btn';
     signInBtn.textContent = t('auth.signIn');
@@ -94,6 +117,8 @@ export class AuthHeaderWidget {
   }
 
   private renderSignedIn(): void {
+    this.renderProButton();
+
     const userBtnEl = document.createElement('div');
     userBtnEl.className = 'auth-clerk-user-button';
     this.container.appendChild(userBtnEl);
