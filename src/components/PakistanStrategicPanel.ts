@@ -5,7 +5,7 @@
  */
 
 import { Panel } from './Panel';
-import { safeHtml, type SafeHtml } from '@/utils/sanitize';
+import { safeHtml, joinSafeHtml, type SafeHtml } from '@/utils/sanitize';
 import { startSmartPollLoop, type SmartPollLoopHandle } from '@/services/smart-poll-loop';
 
 export interface FuelStock {
@@ -84,7 +84,7 @@ export class PakistanStrategicPanel extends Panel {
             <span class="pk-strat-badge pk-strat-badge-ok">SUPPLY NORMAL</span>
           </div>
           <div class="pk-strat-fuel-grid">
-            ${fuelRows}
+            ${joinSafeHtml(fuelRows)}
           </div>
           <div class="pk-strat-hint">Benchmark minimum: 20 days. 85% of crude imported via Gulf/Hormuz tankers.</div>
         </div>
