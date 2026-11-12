@@ -1109,6 +1109,7 @@ export class PanelLayoutManager implements AppModule {
           ${this.ctx.isDesktopApp ? '' : `<button class="copy-link-btn embed-link-btn" id="embedLinkBtn">${t('header.embed')}</button>`}
           ${this.ctx.isDesktopApp ? '' : `<button class="fullscreen-btn" id="fullscreenBtn" title="${t('header.fullscreen')}" aria-label="${t('header.fullscreen')}">⛶</button>`}
           ${SITE_VARIANT === 'happy' ? `<button class="tv-mode-btn" id="tvModeBtn" title="TV Mode (Shift+T)" aria-label="TV Mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>` : ''}
+          ${SITE_VARIANT === 'full' ? `<button class="pk-broadcast-btn" id="pkBroadcastBtn" title="24/7 AI News Broadcast Studio (Shift+B)" aria-label="24/7 AI News Broadcast Studio"><span class="pk-broadcast-dot"></span>AI LIVE</button>` : ''}
           <span id="unifiedSettingsMount"></span>
           <span id="authWidgetMount" class="auth-widget-mount"></span>
         </div>

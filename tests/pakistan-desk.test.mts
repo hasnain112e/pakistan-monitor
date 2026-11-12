@@ -256,5 +256,70 @@ describe('filterPakistanIncidents', () => {
   });
 });
 
+import {
+  buildBroadcastQueue,
+  composeAnchorScript,
+  pickSpeechVoice,
+} from '../src/services/pk-broadcast-engine';
+
+describe('pk-broadcast-engine', () => {
+  it('deduplicates seen links, prioritizes alerts, and locates Pakistan hubs', () => {
+    const items = [
+      {
+        source: 'Dawn',
+        title: 'Blast near Quetta checkpoint',
+        link: 'https://dawn.com/1',
+        pubDate: new Date('2026-11-12T10:00:00Z'),
+        isAlert: true,
+      },
+      {
+        source: 'Geo News',
+        title: 'Already aired story in Lahore',
+        link: 'https://geo.tv/seen',
+        pubDate: new Date('2026-11-12T11:00:00Z'),
+        isAlert: false,
+      },
+      {
+        source: 'BBC Urdu',
+        title: 'کراچی میں بارش کا سلسلہ جاری',
+        link: 'https://bbc.com/urdu/1',
+        pubDate: new Date('2026-11-12T09:00:00Z'),
+        isAlert: false,
+      },
+    ] as import('../src/types').NewsItem[];
+
+    const queue = buildBroadcastQueue(items, new Set(['https://geo.tv/seen']), 'bilingual');
+    assert.equal(queue.length, 2);
+    assert.equal(queue[0]?.placeName, 'Quetta');
+    assert.equal(queue[0]?.isBreaking, true);
+    assert.equal(queue[1]?.isUrdu, true);
+    assert.equal(queue[1]?.placeName, 'Karachi');
+  });
+
+  it('composes Urdu and English anchor scripts and selects matching voices', () => {
+    const enStory = buildBroadcastQueue(
+      [{
+        source: 'Dawn',
+        title: 'IMF reviews Pakistan budget',
+        link: 'https://dawn.com/2',
+        pubDate: new Date('2026-11-12T10:00:00Z'),
+        isAlert: false,
+      }],
+      new Set(),
+      'en',
+    )[0]!;
+    const script = composeAnchorScript(enStory, 'en');
+    assert.equal(script.speechLang, 'en-PK');
+    assert.ok(script.spokenText.includes('IMF reviews Pakistan budget'));
+
+    const voices = [
+      { lang: 'en-US', name: 'US Voice' },
+      { lang: 'ur-PK', name: 'Urdu PK' },
+    ] as unknown as SpeechSynthesisVoice[];
+    assert.equal(pickSpeechVoice(voices, 'ur-PK')?.name, 'Urdu PK');
+    assert.equal(pickSpeechVoice(voices, 'en-PK')?.name, 'US Voice');
+  });
+});
+
 
 

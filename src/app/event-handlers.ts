@@ -306,6 +306,8 @@ export class EventHandlerManager implements AppModule {
   private boundIdleResetHandler: (() => void) | null = null;
   private boundStorageHandler: ((e: StorageEvent) => void) | null = null;
   private boundTvKeydownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private boundBroadcastKeydownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private pkBroadcastStudio: import('@/components/PakistanBroadcastStudio').PakistanBroadcastStudio | null = null;
   private boundThemeChangedHandler: (() => void) | null = null;
   private boundDropdownClickHandler: ((e: MouseEvent) => void) | null = null;
   private boundDropdownKeydownHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -376,6 +378,7 @@ export class EventHandlerManager implements AppModule {
     this.mobilePrimaryNav.init();
     this.setupIdleDetection();
     this.setupTvMode();
+    this.setupBroadcastStudio();
   }
 
   private performUndo(): void {
@@ -494,6 +497,44 @@ export class EventHandlerManager implements AppModule {
     document.getElementById('tvModeBtn')?.classList.toggle('active', this.ctx.tvMode.active);
   }
 
+  private setupBroadcastStudio(): void {
+    if (SITE_VARIANT !== 'full') return;
+
+    const btn = document.getElementById('pkBroadcastBtn');
+    if (btn) {
+      btn.addEventListener('click', () => void this.toggleBroadcastStudio());
+    }
+    this.boundBroadcastKeydownHandler = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'B' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const active = document.activeElement;
+        if (active?.tagName !== 'INPUT' && active?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          void this.toggleBroadcastStudio();
+        }
+      }
+    };
+    document.addEventListener('keydown', this.boundBroadcastKeydownHandler);
+  }
+
+  private async toggleBroadcastStudio(): Promise<void> {
+    if (!this.pkBroadcastStudio) {
+      const { PakistanBroadcastStudio } = await import('@/components/PakistanBroadcastStudio');
+      this.pkBroadcastStudio = new PakistanBroadcastStudio({
+        getNews: () => [
+          ...(this.ctx.newsByCategory['pakistan'] ?? []),
+          ...(this.ctx.newsByCategory['urdu'] ?? []),
+          ...(this.ctx.newsByCategory['middleeast'] ?? []),
+        ],
+        focusMap: (lat, lon, zoom = 7) => this.ctx.map?.setCenter(lat, lon, zoom),
+        onClose: () => {
+          document.getElementById('pkBroadcastBtn')?.classList.remove('active');
+        },
+      });
+    }
+    this.pkBroadcastStudio.toggle();
+    document.getElementById('pkBroadcastBtn')?.classList.toggle('active', this.pkBroadcastStudio.getIsOpen());
+  }
+
   destroy(): void {
     this.closeEmbedDialog();
     this.debouncedUrlSync.cancel();
@@ -539,6 +580,14 @@ export class EventHandlerManager implements AppModule {
     if (this.boundTvKeydownHandler) {
       document.removeEventListener('keydown', this.boundTvKeydownHandler);
       this.boundTvKeydownHandler = null;
+    }
+    if (this.boundBroadcastKeydownHandler) {
+      document.removeEventListener('keydown', this.boundBroadcastKeydownHandler);
+      this.boundBroadcastKeydownHandler = null;
+    }
+    if (this.pkBroadcastStudio) {
+      this.pkBroadcastStudio.destroy();
+      this.pkBroadcastStudio = null;
     }
     if (this.boundThemeChangedHandler) {
       window.removeEventListener('theme-changed', this.boundThemeChangedHandler);
