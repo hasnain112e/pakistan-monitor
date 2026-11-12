@@ -222,7 +222,8 @@
     "legal:pdfs:check": "node scripts/build-legal-pdfs.mjs --check",
     "docs:dates": "node scripts/generate-docs-page-dates.mjs",
     "docs:dates:check": "node scripts/generate-docs-page-dates.mjs --check",
-    "freeze:github-stars": "node scripts/freeze-github-stars.mjs"
+    "freeze:github-stars": "node scripts/freeze-github-stars.mjs",
+    "live:stream": "node scripts/stream-youtube-local.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

@@ -319,7 +319,19 @@ describe('pk-broadcast-engine', () => {
     assert.equal(pickSpeechVoice(voices, 'ur-PK')?.name, 'Urdu PK');
     assert.equal(pickSpeechVoice(voices, 'en-PK')?.name, 'US Voice');
   });
-});
 
+  it('selects neural edge-tts voices and formats speech rates', async () => {
+    const { resolveAnchorVoice, formatEdgeTtsRate, synthesizeAnchorSpeech } = await import('../scripts/pk-anchor-tts.mjs');
+    assert.equal(resolveAnchorVoice('ur-PK'), 'ur-PK-UzmaNeural');
+    assert.equal(resolveAnchorVoice('ur'), 'ur-PK-UzmaNeural');
+    assert.equal(resolveAnchorVoice('en-PK'), 'en-GB-RyanNeural');
+    assert.equal(formatEdgeTtsRate(undefined), '+0%');
+    assert.equal(formatEdgeTtsRate(1), '+0%');
+    assert.equal(formatEdgeTtsRate(1.1), '+10%');
+    assert.equal(formatEdgeTtsRate(0.85), '-15%');
+    assert.equal(formatEdgeTtsRate(2.5), '+50%');
+    await assert.rejects(() => synthesizeAnchorSpeech({ text: '   ' }), /Text is required/);
+  });
+});
 
 

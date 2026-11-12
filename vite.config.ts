@@ -814,7 +814,38 @@ function pakistanApiPlugin(): Plugin {
     name: 'pakistan-api',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        const loadHandler = routes[req.url?.split('?')[0] ?? ''];
+        const pathname = req.url?.split('?')[0] ?? '';
+        if (pathname === '/api/pk-anchor-tts' && req.method === 'POST') {
+          try {
+            const chunks: Buffer[] = [];
+            for await (const chunk of req) chunks.push(Buffer.from(chunk));
+            const body = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}') as {
+              text?: string;
+              lang?: string;
+              speed?: number;
+            };
+            const disconnected = new AbortController();
+            res.on('close', () => { if (!res.writableFinished) disconnected.abort(); });
+            const { synthesizeAnchorSpeech } = await import('./scripts/pk-anchor-tts.mjs');
+            const { audio, voice } = await synthesizeAnchorSpeech({
+              text: String(body.text ?? ''),
+              lang: body.lang,
+              speed: body.speed,
+              signal: disconnected.signal,
+            });
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'audio/mpeg');
+            res.setHeader('X-PK-Anchor-Voice', voice);
+            res.setHeader('Cache-Control', 'no-store');
+            res.end(audio);
+          } catch (error) {
+            res.statusCode = 503;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: error instanceof Error ? error.message : 'TTS unavailable' }));
+          }
+          return;
+        }
+        const loadHandler = routes[pathname];
         if (!loadHandler) return next();
         try {
           const chunks: Buffer[] = [];

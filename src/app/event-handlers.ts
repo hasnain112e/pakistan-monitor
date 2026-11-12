@@ -514,9 +514,14 @@ export class EventHandlerManager implements AppModule {
       }
     };
     document.addEventListener('keydown', this.boundBroadcastKeydownHandler);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('broadcast') === '1') {
+      setTimeout(() => void this.openBroadcastStudio(true), 2500);
+    }
   }
 
-  private async toggleBroadcastStudio(): Promise<void> {
+  private async ensureBroadcastStudio() {
     if (!this.pkBroadcastStudio) {
       const { PakistanBroadcastStudio } = await import('@/components/PakistanBroadcastStudio');
       this.pkBroadcastStudio = new PakistanBroadcastStudio({
@@ -531,8 +536,19 @@ export class EventHandlerManager implements AppModule {
         },
       });
     }
-    this.pkBroadcastStudio.toggle();
-    document.getElementById('pkBroadcastBtn')?.classList.toggle('active', this.pkBroadcastStudio.getIsOpen());
+    return this.pkBroadcastStudio;
+  }
+
+  private async openBroadcastStudio(autoStart = false): Promise<void> {
+    const studio = await this.ensureBroadcastStudio();
+    studio.open(autoStart);
+    document.getElementById('pkBroadcastBtn')?.classList.toggle('active', studio.getIsOpen());
+  }
+
+  private async toggleBroadcastStudio(): Promise<void> {
+    const studio = await this.ensureBroadcastStudio();
+    studio.toggle();
+    document.getElementById('pkBroadcastBtn')?.classList.toggle('active', studio.getIsOpen());
   }
 
   destroy(): void {

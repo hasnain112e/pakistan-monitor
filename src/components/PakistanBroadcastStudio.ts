@@ -42,6 +42,7 @@ export class PakistanBroadcastStudio {
   private currentStory: BroadcastStory | null = null;
   private currentCaption = 'Press “Start AI Anchor” to begin 24/7 live bilingual broadcast.';
   private currentSpeechLang = 'en-PK';
+  private activeVoiceLabel = 'Neural Edge-TTS';
 
   private kse: Kse100Quote | null = null;
   private fx: (PkrRates & { updated: string | null }) | null = null;
@@ -53,6 +54,9 @@ export class PakistanBroadcastStudio {
   private telemetryTimer: ReturnType<typeof setInterval> | null = null;
   private fallbackAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
   private telemetryAbort: AbortController | null = null;
+  private ttsAbort: AbortController | null = null;
+  private activeAudio: HTMLAudioElement | null = null;
+  private activeAudioUrl: string | null = null;
 
   constructor(private readonly opts: BroadcastStudioOptions) {
     this.root = document.createElement('div');
@@ -64,8 +68,11 @@ export class PakistanBroadcastStudio {
     this.bindEvents();
   }
 
-  public open(): void {
-    if (this.isOpen) return;
+  public open(autoStart = false): void {
+    if (this.isOpen) {
+      if (autoStart && !this.isOnAir) this.startAnchor();
+      return;
+    }
     this.isOpen = true;
     this.root.hidden = false;
     if (!this.root.parentElement) {
@@ -78,7 +85,11 @@ export class PakistanBroadcastStudio {
     this.pollTimer = setInterval(() => this.refreshQueue(false), 15_000);
     this.telemetryTimer = setInterval(() => void this.refreshTelemetry(), 3 * 60_000);
     this.clockTimer = setInterval(() => this.updateClock(), 1_000);
-    this.render();
+    if (autoStart) {
+      this.startAnchor();
+    } else {
+      this.render();
+    }
   }
 
   public close(): void {
@@ -200,16 +211,31 @@ export class PakistanBroadcastStudio {
     this.playNextStory(true);
   }
 
-  private stopAnchor(): void {
-    this.isOnAir = false;
-    this.isSpeaking = false;
+  private stopActiveSpeech(): void {
     if (this.fallbackAdvanceTimer) {
       clearTimeout(this.fallbackAdvanceTimer);
       this.fallbackAdvanceTimer = null;
     }
+    this.ttsAbort?.abort();
+    this.ttsAbort = null;
+    if (this.activeAudio) {
+      this.activeAudio.pause();
+      this.activeAudio.src = '';
+      this.activeAudio = null;
+    }
+    if (this.activeAudioUrl) {
+      URL.revokeObjectURL(this.activeAudioUrl);
+      this.activeAudioUrl = null;
+    }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+  }
+
+  private stopAnchor(): void {
+    this.isOnAir = false;
+    this.isSpeaking = false;
+    this.stopActiveSpeech();
     if (this.isOpen) this.render();
   }
 
@@ -236,13 +262,7 @@ export class PakistanBroadcastStudio {
   }
 
   private playNextStory(manualSkip: boolean): void {
-    if (this.fallbackAdvanceTimer) {
-      clearTimeout(this.fallbackAdvanceTimer);
-      this.fallbackAdvanceTimer = null;
-    }
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    this.stopActiveSpeech();
 
     if (this.queue.length === 0) {
       this.refreshQueue(false);
@@ -271,18 +291,81 @@ export class PakistanBroadcastStudio {
     const script = composeAnchorScript(next, this.langMode);
     this.currentCaption = script.captionText;
     this.currentSpeechLang = script.speechLang;
-    this.speakScript(script.spokenText, script.speechLang);
+    void this.speakScript(script.spokenText, script.speechLang);
   }
 
-  private speakScript(text: string, speechLang: string): void {
+  private advanceAfterSpeech(): void {
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
+    this.isSpeaking = false;
+    if (this.isOnAir) {
+      setTimeout(() => {
+        if (this.isOnAir) this.playNextStory(false);
+      }, 1200);
+    } else if (this.isOpen) {
+      this.render();
+    }
+  }
+
+  private async speakScript(text: string, speechLang: string): Promise<void> {
+    this.isSpeaking = true;
+    this.activeVoiceLabel = 'Neural Edge-TTS';
+    this.render();
+
+    const abort = new AbortController();
+    this.ttsAbort = abort;
+
+    try {
+      const res = await fetch('/api/pk-anchor-tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, lang: speechLang, speed: this.speechRate }),
+        signal: abort.signal,
+      });
+      if (!res.ok) throw new Error(`TTS HTTP ${res.status}`);
+      const voiceHeader = res.headers.get('X-PK-Anchor-Voice');
+      const blob = await res.blob();
+      if (abort.signal.aborted || !this.isOnAir) return;
+
+      const audioUrl = URL.createObjectURL(blob);
+      const audio = new Audio(audioUrl);
+      this.activeAudio = audio;
+      this.activeAudioUrl = audioUrl;
+      if (voiceHeader) this.activeVoiceLabel = voiceHeader;
+      this.render();
+
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        if (this.activeAudioUrl === audioUrl) {
+          URL.revokeObjectURL(audioUrl);
+          this.activeAudioUrl = null;
+        }
+        if (this.activeAudio === audio) this.activeAudio = null;
+        this.advanceAfterSpeech();
+      };
+
+      audio.onended = done;
+      audio.onerror = done;
+      this.fallbackAdvanceTimer = setTimeout(done, 40_000);
+      await audio.play();
+      return;
+    } catch {
+      if (abort.signal.aborted || !this.isOnAir) return;
+    }
+
+    this.speakWithBrowserSynthesis(text, speechLang);
+  }
+
+  private speakWithBrowserSynthesis(text: string, speechLang: string): void {
+    this.activeVoiceLabel = 'Browser Speech';
     const synth = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null;
     if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
-      this.isSpeaking = true;
       this.render();
-      this.fallbackAdvanceTimer = setTimeout(() => {
-        this.isSpeaking = false;
-        if (this.isOnAir) this.playNextStory(false);
-      }, 9000);
+      this.fallbackAdvanceTimer = setTimeout(() => this.advanceAfterSpeech(), 9000);
       return;
     }
 
@@ -290,27 +373,18 @@ export class PakistanBroadcastStudio {
     utterance.lang = speechLang;
     utterance.rate = this.speechRate;
     const voice = pickSpeechVoice(synth.getVoices(), speechLang);
-    if (voice) utterance.voice = voice;
+    if (voice) {
+      utterance.voice = voice;
+      this.activeVoiceLabel = voice.name;
+    }
 
-    this.isSpeaking = true;
     this.render();
 
     let settled = false;
     const finish = () => {
       if (settled) return;
       settled = true;
-      if (this.fallbackAdvanceTimer) {
-        clearTimeout(this.fallbackAdvanceTimer);
-        this.fallbackAdvanceTimer = null;
-      }
-      this.isSpeaking = false;
-      if (this.isOnAir) {
-        setTimeout(() => {
-          if (this.isOnAir) this.playNextStory(false);
-        }, 1200);
-      } else if (this.isOpen) {
-        this.render();
-      }
+      this.advanceAfterSpeech();
     };
 
     utterance.onend = finish;
@@ -416,7 +490,7 @@ export class PakistanBroadcastStudio {
             <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
           </div>
           <p class="pk-studio-caption ${isUrdu ? 'pk-urdu-caption' : ''}">${this.currentCaption}</p>
-          <div class="pk-studio-disclaimer">AI-synthesized live briefing · Original telemetry & source-attributed commentary</div>
+          <div class="pk-studio-disclaimer">Voice: ${this.activeVoiceLabel} · AI-synthesized live briefing · Original telemetry & source-attributed commentary</div>
         </aside>
       </div>
 
