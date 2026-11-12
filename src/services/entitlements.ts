@@ -14,7 +14,6 @@ import {
   waitForConvexAuthForUser,
 } from './convex-client';
 import { getCurrentClerkUser } from './clerk';
-import { hasAccountEmbedAccess } from '../../shared/embed-access';
 
 export interface EntitlementState {
   planKey: string;
@@ -314,7 +313,7 @@ export function hasFeature(_flag: keyof EntitlementState['features']): boolean {
  * Check the account-level embed grant from both verified auth authorities.
  * Clerk's current PRO role must not wait for the Convex snapshot to hydrate.
  */
-export function hasEmbedAccessForAccount(role: 'free' | 'pro' | undefined): boolean {
+export function hasEmbedAccessForAccount(_role: 'free' | 'pro' | undefined): boolean {
   return true;
 }
 

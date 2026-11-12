@@ -26,6 +26,31 @@ export function pakistanIncidents(items: NewsItem[]): PkIncident[] {
   return out.sort((a, b) => b.item.pubDate.getTime() - a.item.pubDate.getTime());
 }
 
+export type IncidentFilterGroup = 'all' | 'security' | 'protest' | 'disaster' | 'infra';
+
+const SECURITY_CATEGORIES: ReadonlySet<EventCategory> = new Set<EventCategory>([
+  'terrorism', 'conflict', 'military',
+]);
+const INFRA_OTHER_CATEGORIES: ReadonlySet<EventCategory> = new Set<EventCategory>([
+  'infrastructure', 'health', 'crime',
+]);
+
+export function filterPakistanIncidents(
+  incidents: PkIncident[],
+  opts: { province?: string | null; group?: IncidentFilterGroup } = {},
+): PkIncident[] {
+  const group = opts.group ?? 'all';
+  const province = opts.province ?? null;
+  return incidents.filter((inc) => {
+    if (province && inc.place.province !== province) return false;
+    if (group === 'security') return SECURITY_CATEGORIES.has(inc.category);
+    if (group === 'protest') return inc.category === 'protest';
+    if (group === 'disaster') return inc.category === 'disaster';
+    if (group === 'infra') return INFRA_OTHER_CATEGORIES.has(inc.category);
+    return true;
+  });
+}
+
 export function countByProvince(incidents: PkIncident[]): Array<[string, number]> {
   const counts = new Map<string, number>();
   for (const i of incidents) counts.set(i.place.province, (counts.get(i.place.province) ?? 0) + 1);

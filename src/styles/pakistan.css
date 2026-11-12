@@ -6,17 +6,17 @@
 
 :root:not([data-variant]):not([data-theme="light"]),
 :root[data-variant="full"]:not([data-theme="light"]) {
-  --pk-green: #2fbf71; /* flag green #01411C, lifted for contrast on dark */
-  --pk-green-glow: rgba(47, 191, 113, 0.35);
-  --pk-green-bg: rgba(47, 191, 113, 0.08);
-  --bg: #040906;
-  --bg-secondary: #071009;
-  --surface: #0a170f;
-  --surface-hover: #102216;
-  --panel-bg: rgba(10, 22, 14, 0.88);
-  --border: #162f1e;
-  --border-subtle: #102115;
-  --panel-border: rgba(47, 191, 113, 0.22);
+  --pk-green: #10b981; /* High-contrast modern tactical emerald */
+  --pk-green-glow: rgba(16, 185, 129, 0.4);
+  --pk-green-bg: rgba(16, 185, 129, 0.1);
+  --bg: #070a0f; /* Deep stealth obsidian void */
+  --bg-secondary: #0b1019;
+  --surface: #0f1726; /* Titanium slate glass */
+  --surface-hover: #152033;
+  --panel-bg: rgba(13, 20, 32, 0.88);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --panel-border: rgba(56, 189, 248, 0.16);
   --green: var(--pk-green);
   --status-live: var(--pk-green);
   --semantic-positive: var(--pk-green);
@@ -24,25 +24,34 @@
 
 :root[data-theme="light"]:not([data-variant]),
 :root[data-theme="light"][data-variant="full"] {
-  --pk-green: #01411c;
-  --pk-green-glow: rgba(1, 65, 28, 0.2);
-  --pk-green-bg: rgba(1, 65, 28, 0.05);
-  --green: #0f7a3d;
-  --status-live: #0f7a3d;
-  --semantic-positive: #0f7a3d;
+  --pk-green: #047857;
+  --pk-green-glow: rgba(4, 120, 87, 0.2);
+  --pk-green-bg: rgba(4, 120, 87, 0.05);
+  --green: #047857;
+  --status-live: #047857;
+  --semantic-positive: #047857;
 }
 
 /* ============================================================
    Futuristic Command Center Header
    ============================================================ */
 .header {
-  background: rgba(4, 9, 6, 0.88) !important;
-  backdrop-filter: blur(20px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-  border-bottom: 1px solid rgba(47, 191, 113, 0.28) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(47, 191, 113, 0.15) !important;
+  background: rgba(7, 11, 17, 0.94) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(56, 189, 248, 0.1) !important;
   height: 52px !important;
   padding: 0 16px !important;
+}
+
+/* Hide tacky pizza element */
+.pizzint-indicator,
+.pizzint-container,
+[class*="pizzint"],
+button[title*="Pizza"],
+button[aria-label*="Pizza"] {
+  display: none !important;
 }
 
 .variant-option[data-variant="full"] {
@@ -189,32 +198,35 @@
    High-Tech Tactical Panel Cards
    ============================================================ */
 .panel {
-  background: linear-gradient(180deg, rgba(11, 23, 15, 0.9) 0%, rgba(5, 10, 7, 0.96) 100%) !important;
-  backdrop-filter: blur(16px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-  border: 1px solid rgba(47, 191, 113, 0.2) !important;
-  border-top: 2px solid rgba(47, 191, 113, 0.6) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+  background: linear-gradient(180deg, rgba(14, 21, 33, 0.92) 0%, rgba(9, 14, 23, 0.96) 100%) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid rgba(16, 185, 129, 0.6) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .panel:hover {
-  border-color: rgba(47, 191, 113, 0.38) !important;
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.6), 0 0 16px rgba(47, 191, 113, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.75), 0 0 20px rgba(16, 185, 129, 0.12) !important;
 }
 
 .panel-header {
   font-family: 'Outfit', sans-serif !important;
   font-weight: 700 !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: 0.06em !important;
   text-transform: uppercase !important;
-  background: linear-gradient(90deg, rgba(47, 191, 113, 0.08) 0%, transparent 100%);
-  border-bottom: 1px solid rgba(47, 191, 113, 0.15) !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  padding: 0 12px !important;
+  height: 40px !important;
 }
 
 .panel-title {
-  color: #f1f5f9 !important;
+  color: #f8fafc !important;
+  font-size: 11.5px !important;
 }
 
 /* ============================================================
@@ -343,18 +355,19 @@ a.item-title:hover,
 
 .pk-stat {
   display: grid;
-  gap: 4px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: linear-gradient(145deg, rgba(47, 191, 113, 0.07) 0%, rgba(12, 24, 16, 0.75) 100%);
-  border: 1px solid rgba(47, 191, 113, 0.2);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(17, 24, 39, 0.85) 0%, rgba(11, 17, 28, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pk-stat:hover {
-  border-color: rgba(47, 191, 113, 0.45);
-  box-shadow: 0 6px 20px rgba(47, 191, 113, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.1);
+  transform: translateY(-1px);
 }
 
 .pk-stat-label {

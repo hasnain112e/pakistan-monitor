@@ -33,6 +33,13 @@ export class PakistanMarketsPanel extends Panel {
       infoTooltip: 'KSE-100 from the PSX Data Portal, refreshed every 5 minutes; if PSX is unreachable the last good value is shown marked stale. Rupee rates from open.er-api.com, published daily.',
     });
     this.showLoading();
+    this.content.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('button[data-markets-refresh]')) {
+        this.fxFetchedAt = 0;
+        this.goldFetchedAt = 0;
+        void this.refresh();
+      }
+    });
     this.loop = startSmartPollLoop(() => this.refresh(), { intervalMs: 5 * 60_000, runImmediately: true, pauseWhenHidden: true });
   }
 
@@ -57,7 +64,8 @@ export class PakistanMarketsPanel extends Panel {
       if (wantGold) this.goldFetchedAt = Date.now();
       this.gold = gold.value;
     }
-    this.setSafeContent(safeHtml`<div class="pk-markets">${this.renderKse()}${this.renderFx()}${this.renderGold()}</div>`);
+    const toolbar = safeHtml`<div class="pk-brief-toolbar"><span class="pk-note">PSX · FX · Bullion</span><button type="button" class="pk-action-btn" data-markets-refresh="1">↻ Refresh</button></div>`;
+    this.setSafeContent(safeHtml`${toolbar}<div class="pk-markets">${this.renderKse()}${this.renderFx()}${this.renderGold()}</div>`);
   }
 
   private renderKse(): SafeHtml {
@@ -85,10 +93,16 @@ export class PakistanMarketsPanel extends Panel {
     const fx = this.fx;
     if (!fx) return safeHtml`<div class="pk-stat"><div class="pk-stat-label">USD / PKR</div><div class="pk-note pk-warn">Unavailable: ${this.fxError ?? 'no data'}</div></div>`;
     const crosses = joinSafeHtml(fx.crosses.map((c) => safeHtml`<span><b>${c.code}</b> ${number(c.pkr, 2)}</span>`));
+    const sar = fx.crosses.find((c) => c.code === 'SAR');
+    const aed = fx.crosses.find((c) => c.code === 'AED');
+    const remit = (sar || aed)
+      ? safeHtml`<div class="pk-remit-strip"><span>1k USD: <b>${number(fx.usd * 1000, 0)}</b></span>${sar ? safeHtml`<span>1k SAR: <b>${number(sar.pkr * 1000, 0)}</b></span>` : ''}${aed ? safeHtml`<span>1k AED: <b>${number(aed.pkr * 1000, 0)}</b></span>` : ''}</div>`
+      : '';
     return safeHtml`<div class="pk-stat">
       <div class="pk-stat-label">USD / PKR</div>
       <div class="pk-stat-value">${number(fx.usd, 2)}</div>
       <div class="pk-cross">${crosses}</div>
+      ${remit}
       <div class="pk-note">open.er-api.com${fx.updated ? ` · ${fx.updated}` : ''}</div>
       ${this.fxError ? safeHtml`<div class="pk-note pk-warn">Refresh failed: ${this.fxError}</div>` : ''}
     </div>`;

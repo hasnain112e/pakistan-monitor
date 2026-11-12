@@ -153,3 +153,47 @@ export const errorMessage = (error: unknown): string => (error instanceof Error 
 
 export const formatTime = (iso: string): string =>
   new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+const PK_WATCHLIST_TOPICS: Array<{ label: string; pattern: RegExp }> = [
+  { label: 'IMF / Economy', pattern: /\b(imf|adb|world bank|tax|budget|fiscal|debt|inflation|tariff)\b/i },
+  { label: 'SBP / PKR', pattern: /\b(sbp|state bank|rupee|pkr|forex|reserves|policy rate|kse-?100|psx)\b/i },
+  { label: 'CPEC / Gwadar', pattern: /\b(cpec|gwadar|karakoram|kkh|ml-?1|china|belt and road)\b/i },
+  { label: 'Energy / POL', pattern: /\b(petrol|diesel|lng|oil|gas|power|tarbela|mangla|nepra|ogra|hormuz)\b/i },
+  { label: 'Security / Border', pattern: /\b(ispr|ttp|loc|border|afghan|baloch|blast|operation|militant|attack|security)\b/i },
+  { label: 'Climate / Flood', pattern: /\b(flood|monsoon|smog|aqi|quake|earthquake|heatwave|pdma|ndma)\b/i },
+];
+
+export function detectPakistanTopics(text: string): string[] {
+  const tags: string[] = [];
+  for (const topic of PK_WATCHLIST_TOPICS) {
+    if (topic.pattern.test(text)) tags.push(topic.label);
+  }
+  return tags;
+}
+
+export function formatPakistanBriefMarkdown(opts: {
+  bullets?: string[];
+  items: NewsItem[];
+  provider?: string;
+  model?: string;
+  generatedAt?: string;
+}): string {
+  const stamp = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Karachi',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(opts.generatedAt ? new Date(opts.generatedAt) : new Date());
+  const lines: string[] = [`# Pakistan Monitor — Situation Brief (${stamp} PKT)`, ''];
+  if (opts.bullets?.length) {
+    lines.push(`## AI Summary (${opts.provider ?? 'LLM'} · ${opts.model ?? 'local'})`);
+    for (const b of opts.bullets) lines.push(`- ${b}`);
+    lines.push('');
+  }
+  lines.push('## Watchlist Headlines');
+  for (const item of opts.items.slice(0, 8)) {
+    const tags = detectPakistanTopics(item.title);
+    const prefix = tags.length ? `[${tags.join(', ')}] ` : '';
+    lines.push(`- ${prefix}${item.title} (${item.source}) — ${item.link}`);
+  }
+  return lines.join('\n');
+}

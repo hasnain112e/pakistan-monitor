@@ -1,4 +1,4 @@
-import { subscribeAuthState, type AuthSession } from '@/services/auth-state';
+import { getAuthState, subscribeAuthState, type AuthSession } from '@/services/auth-state';
 import { mountUserButton, openSignIn, openSignUp } from '@/services/clerk';
 import { t } from '@/services/i18n';
 import { setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
@@ -13,7 +13,8 @@ export class AuthHeaderWidget {
   private onBillingClick?: () => void;
   private onProStatusChange = () => {
     // Re-render when PRO status changes
-    this.render({ isPending: false, user: null, org: null });
+    const state = getAuthState();
+    if (!state.isPending) this.render(state);
   };
 
   constructor(
@@ -57,9 +58,13 @@ export class AuthHeaderWidget {
     const proBtn = document.createElement('button');
     proBtn.type = 'button';
     proBtn.className = isPro ? 'auth-pro-pass-btn auth-pro-active' : 'auth-pro-pass-btn';
-    proBtn.innerHTML = isPro
-      ? '<span class="pk-pro-pulse"></span>★ PRO ACTIVE'
-      : '⚡ PRO INTEL PASS';
+    setTrustedHtml(
+      proBtn,
+      trustedHtml(
+        isPro ? '<span class="pk-pro-pulse"></span>★ PRO ACTIVE' : '⚡ PRO INTEL PASS',
+        'static PRO status button',
+      ),
+    );
     proBtn.title = 'Open Pakistan Monitor PRO Intelligence Suite';
     proBtn.addEventListener('click', () => openProIntelligenceModal());
     this.container.appendChild(proBtn);

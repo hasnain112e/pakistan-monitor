@@ -5,7 +5,7 @@
  */
 
 import { Panel } from './Panel';
-import { safeHtml, joinSafeHtml, type SafeHtml } from '@/utils/sanitize';
+import { safeHtml, joinSafeHtml } from '@/utils/sanitize';
 import { startSmartPollLoop, type SmartPollLoopHandle } from '@/services/smart-poll-loop';
 
 export interface FuelStock {

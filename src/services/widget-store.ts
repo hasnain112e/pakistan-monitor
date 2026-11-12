@@ -2,7 +2,7 @@ import { loadFromStorage, saveToStorage } from '@/utils';
 import { safeStorageGet } from '@/utils/safe-storage';
 import { clearPanelColSpanEntry, clearPanelSpanEntry } from '@/utils/panel-storage';
 import { getAuthState } from '@/services/auth-state';
-import { isEntitled, getEntitlementState } from '@/services/entitlements';
+import { getEntitlementState } from '@/services/entitlements';
 import {
   clearBrowserKeySession,
   migrateLegacyKeysToHttpOnlySession,
@@ -151,8 +151,6 @@ export function getWidget(id: string): CustomWidgetSpec | null {
 // HttpOnly cookies. We keep only a tab-local hint so current-page flows can
 // update immediately without re-exposing the raw key after reload.
 
-let widgetSessionHint = false;
-let proSessionHint = false;
 let migrationStarted = false;
 const accessListeners = new Set<() => void>();
 
@@ -172,8 +170,6 @@ function migrateLegacyKeyStorage(): void {
   const widgetKey = readLegacySessionKey('wm-widget-key');
   const proKey = readLegacySessionKey('wm-pro-key');
   if (!widgetKey && !proKey) return;
-  widgetSessionHint = !!widgetKey;
-  proSessionHint = !!proKey;
   void migrateLegacyKeysToHttpOnlySession({ widgetKey, proKey })
     .catch(() => { /* retry on next boot; a transport failure keeps legacy storage */ });
 }
@@ -184,7 +180,6 @@ export async function setWidgetKey(key: string): Promise<boolean> {
     ? await migrateLegacyKeysToHttpOnlySession({ widgetKey: trimmed })
     : await clearBrowserKeySession('wm-widget-key');
   if (ok) {
-    widgetSessionHint = !!trimmed;
     notifyAccessChanged();
   }
   return ok;
@@ -196,7 +191,6 @@ export async function setProKey(key: string): Promise<boolean> {
     ? await migrateLegacyKeysToHttpOnlySession({ proKey: trimmed })
     : await clearBrowserKeySession('wm-pro-key');
   if (ok) {
-    proSessionHint = !!trimmed;
     notifyAccessChanged();
   }
   return ok;

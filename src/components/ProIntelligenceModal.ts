@@ -4,6 +4,9 @@
  * working license key activation, and live Telegram War Alert simulation.
  */
 
+import { setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
+import { escapeHtml } from '@/utils/sanitize';
+
 let modalContainer: HTMLElement | null = null;
 
 export function isProSubscriber(): boolean {
@@ -40,7 +43,7 @@ export function openProIntelligenceModal(): void {
   overlay.className = 'pk-pro-modal-overlay';
   overlay.id = 'pk-pro-modal';
 
-  overlay.innerHTML = `
+  setTrustedHtml(overlay, trustedHtml(`
     <div class="pk-pro-modal-dialog">
       <div class="pk-pro-modal-header">
         <div class="pk-pro-modal-title">
@@ -145,7 +148,7 @@ export function openProIntelligenceModal(): void {
         </div>
       </div>
     </div>
-  `;
+  `, 'PRO Intelligence modal markup'));
 
   document.body.appendChild(overlay);
   modalContainer = overlay;
@@ -186,7 +189,10 @@ export function openProIntelligenceModal(): void {
     // Accept valid demo keys
     setProSubscriber(true);
     if (licenseMsg) {
-      licenseMsg.innerHTML = `<span style="color: #2ecc71;">✓ Key successfully redeemed! PRO Intel Pass activated.</span>`;
+      setTrustedHtml(
+        licenseMsg,
+        trustedHtml('<span style="color: #2ecc71;">✓ Key successfully redeemed! PRO Intel Pass activated.</span>', 'static license confirmation'),
+      );
     }
     setTimeout(() => {
       openProIntelligenceModal();
@@ -209,7 +215,8 @@ export function openProIntelligenceModal(): void {
 
       if (tgPreview) {
         tgPreview.style.display = 'block';
-        tgPreview.innerHTML = `
+        const safeUsername = escapeHtml(username);
+        setTrustedHtml(tgPreview, trustedHtml(`
           <div class="pk-tg-bubble">
             <div class="pk-tg-bubble-hdr">
               <span><b>@PakMonitorIntelBot</b> (Verified Tactical Feed)</span>
@@ -220,11 +227,11 @@ export function openProIntelligenceModal(): void {
               <b>Event:</b> Anti-ship ballistic missile launch detected from coastal battery near Hodeidah.<br/>
               <b>Target:</b> Commercial container vessel transiting 42nm SW.<br/>
               <b>Outcome:</b> Intercepted by coalition Aegis destroyer. No hull impact.<br/>
-              <b>Action:</b> Dispatched to registered handle: <code>${username}</code><br/>
+              <b>Action:</b> Dispatched to registered handle: <code>${safeUsername}</code><br/>
               <i>Latency: 0.28 seconds from satellite detection to Telegram delivery.</i>
             </div>
           </div>
-        `;
+        `, 'escaped telegram alert preview'));
       }
     }, 600);
   });

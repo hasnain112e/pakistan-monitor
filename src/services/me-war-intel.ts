@@ -218,7 +218,7 @@ export function extractLiveWarEvents(newsItems: NewsItem[]): KineticIncident[] {
   const parsedIncidents: KineticIncident[] = [];
 
   for (const item of newsItems) {
-    const text = (item.title + ' ' + (item.description ?? '')).toLowerCase();
+    const text = `${item.title} ${item.locationName ?? ''}`.toLowerCase();
     const match = warKeywords.find((k) => text.includes(k.kw));
 
     if (match) {
@@ -255,10 +255,10 @@ export function extractLiveWarEvents(newsItems: NewsItem[]): KineticIncident[] {
       }
 
       parsedIncidents.push({
-        id: `news-${item.id ?? Math.random().toString(36).substring(2, 9)}`,
+        id: `news-${parsedIncidents.length}-${(item.link || item.title).slice(0, 24).replace(/\W+/g, '-')}`,
         theater,
         title: item.title,
-        summary: item.description ? item.description.replace(/<[^>]+>/g, '').slice(0, 160) + '…' : item.title,
+        summary: item.locationName ? `${item.locationName} — ${item.title}` : item.title,
         location,
         lat,
         lon,

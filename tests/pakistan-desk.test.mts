@@ -203,5 +203,58 @@ describe('generateObsidianVaultMarkdown', () => {
   });
 });
 
+import { detectPakistanTopics, formatPakistanBriefMarkdown } from '../src/services/pakistan-desk';
+import { filterPakistanIncidents, type PkIncident } from '../src/services/pk-incidents';
+
+describe('detectPakistanTopics & formatPakistanBriefMarkdown', () => {
+  it('tags Pakistan watchlist topics accurately', () => {
+    assert.deepEqual(
+      detectPakistanTopics('IMF reviews fiscal budget as SBP holds policy rate and CPEC Gwadar LNG flow rises'),
+      ['IMF / Economy', 'SBP / PKR', 'CPEC / Gwadar', 'Energy / POL'],
+    );
+    assert.deepEqual(detectPakistanTopics('Cricket match schedule announced'), []);
+  });
+
+  it('formats a Markdown situation brief with AI bullets and tagged headlines', () => {
+    const md = formatPakistanBriefMarkdown({
+      bullets: ['IMF mission arrives in Islamabad.'],
+      provider: 'ollama',
+      model: 'qwen2.5:3b',
+      generatedAt: '2026-10-16T05:00:00Z',
+      items: [{
+        source: 'Dawn',
+        title: 'SBP holds policy rate steady',
+        link: 'https://www.dawn.com/news/1',
+        pubDate: new Date('2026-10-16T04:00:00Z'),
+        isAlert: false,
+      }],
+    });
+    assert.ok(md.includes('# Pakistan Monitor — Situation Brief'));
+    assert.ok(md.includes('IMF mission arrives in Islamabad.'));
+    assert.ok(md.includes('[SBP / PKR] SBP holds policy rate steady (Dawn)'));
+  });
+});
+
+describe('filterPakistanIncidents', () => {
+  const mkInc = (province: string, category: PkIncident['category']): PkIncident => ({
+    item: { source: 'Dawn', title: 'Test', link: `${province}-${category}`, pubDate: new Date(), isAlert: false },
+    place: { name: 'City', nameUr: '', kind: 'city', province, lat: 30, lon: 70 },
+    category,
+    level: 'high',
+  });
+
+  it('filters by province and category group', () => {
+    const sample = [
+      mkInc('KP', 'terrorism'),
+      mkInc('Punjab', 'protest'),
+      mkInc('Sindh', 'disaster'),
+      mkInc('Balochistan', 'infrastructure'),
+    ];
+    assert.equal(filterPakistanIncidents(sample, { group: 'security' }).length, 1);
+    assert.equal(filterPakistanIncidents(sample, { province: 'Sindh' }).length, 1);
+    assert.equal(filterPakistanIncidents(sample, { province: 'KP', group: 'protest' }).length, 0);
+  });
+});
+
 
 

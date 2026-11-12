@@ -15,21 +15,12 @@
  */
 
 import type { AuthSession } from '../auth-state';
-import { getSubscription } from '../billing';
-import { deriveBillingUxState } from '../billing-state';
-import { getEntitlementState } from '../entitlements';
 import { PanelGateReason } from '../panel-gating';
-import { getSecretState } from '../runtime-config';
-import {
-  isExportGateActive,
-  resolveAvailableExportFormats,
-  resolveExportGate,
-  resolveTabCap,
-  type DataExportFormat,
-  type ExportGateInputs,
-  type ExportGateLockReason,
-  type ExportGateVerdict,
-  type TabCapVerdict,
+import type {
+  DataExportFormat,
+  ExportGateLockReason,
+  ExportGateVerdict,
+  TabCapVerdict,
 } from './export-resolver';
 
 /** Export-gate lock reasons carry the same string values as the enum. */
@@ -44,34 +35,6 @@ const EXPORT_LOCK_TO_GATE_REASON: Record<ExportGateLockReason, PanelGateReason> 
 
 export function exportLockToGateReason(reason: ExportGateLockReason): PanelGateReason {
   return EXPORT_LOCK_TO_GATE_REASON[reason];
-}
-
-/**
- * Snapshot the live inputs of the data-export gate (plan 2026-07-25-001, KTD2)
- * and the dashboard tab cap (KTD8) — one reactive read shared by both.
- * The decisions themselves live in the pure `export-resolver` leaf so they can
- * be unit-tested without a DOM; this function only reads the reactive sources.
- *
- * Module-private: the public entry points below wrap it, and no caller outside
- * this file has ever needed the raw inputs.
- */
-function readExportGateInputs(authState: AuthSession): ExportGateInputs {
-  const entitlement = getEntitlementState();
-  return {
-    gateActive: isExportGateActive(),
-    desktopKeyPresent: getSecretState('WORLDMONITOR_API_KEY').present,
-    authPending: authState.isPending,
-    signedIn: Boolean(authState.user),
-    features: entitlement
-      ? {
-          tier: entitlement.features.tier,
-          dataExport: entitlement.features.dataExport,
-          exportFormats: entitlement.features.exportFormats,
-          maxDashboards: entitlement.features.maxDashboards,
-        }
-      : null,
-    billingState: deriveBillingUxState(getSubscription(), entitlement, Date.now()),
-  };
 }
 
 /** Current data-export verdict for the given auth session. */
